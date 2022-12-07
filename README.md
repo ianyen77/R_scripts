@@ -1,1 +1,1 @@
-some scriptss
+some scripts
