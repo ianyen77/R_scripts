@@ -1,17 +1,18 @@
-#¦¹¸}¥»¥D­n¬°»Î±µ¦bkraken2_mpa.pl¸}¥»«á¥h³B²zÂà´«¦¨mpaformatªºÀÉ®×
+#æ­¤è…³æœ¬ä¸»è¦ç‚ºéŠœæ¥åœ¨kraken2_mpa.plè…³æœ¬å¾Œå»è™•ç†è½‰æ›æˆmpaformatçš„æª”æ¡ˆ
 library("openxlsx")
 library("tidyverse")
 library("ggplot2")
-#r°O±o¿é¤J«e­n¥ı§âmpaªº¼Ë«~¦WºÙ§ï±¼
-taxon_mpa_format<-read.xlsx(xlsxFile = "C:/Users/TUNG'S LAB/Desktop/test_mpa.xlsx",sheet=1,colNames = T)
+#è¨˜å¾—è¼¸å…¥å‰è¦å…ˆæŠŠmpaçš„æ¨£å“åç¨±æ”¹æ‰
+taxon_mpa_format<-read.xlsx(xlsxFile = "C://Users/USER/Desktop/kraken2_mpa_combine.xlsx",sheet=1,colNames = T)
 taxon_mpa_format<-taxon_mpa_format%>%
   filter(str_detect(`#Classification`,pattern="k__Bacteria"))
 
 taxon_mpa1<-taxon_mpa_format%>%
   separate(`#Classification`,sep="\\|",into=c("Domain","Phyla","Class","Order","Family","Genus","Species"))
 
-write.xlsx(taxon_mpa1,"C:/Users/TUNG'S LAB/Desktop/taxon_mpa.xlsx")
-#¦b³o¤§«á§Ú­Ì»İ­n¥hexcel¤â°Ê½Õ¾ã±N¥¿½Tªº¤ÀÃş©ñ¦b¥¿½Tªºcolumn
+write.xlsx(taxon_mpa1,"C://Users/USER/Desktop/taxon_adjust_mpa.xlsx")
+#åœ¨é€™ä¹‹å¾Œæˆ‘å€‘éœ€è¦å»excelæ‰‹å‹•èª¿æ•´å°‡æ­£ç¢ºçš„åˆ†é¡æ”¾åœ¨æ­£ç¢ºçš„column
+#æ‰€æœ‰çš„columnä¸‹é¢çš„åˆ†é¡éƒ½è¦è·Ÿcolumnæœ‰å°æ‡‰ä¸Š
 
 taxon_mpa<-read.xlsx(xlsxFile = "C:/Users/TUNG'S LAB/Desktop/taxon_mpa.xlsx",sheet=1,colNames = T)
 
