@@ -3,8 +3,10 @@ library(ecodist)
 library(ggplot2)
 library(openxlsx)
 library(RColorBrewer)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/rel_abundance/species_rel_table.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/ARG/argoap_out.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
 groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+#這個不一定要，下面這個只是把全部都是0的rows清掉
+dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
 dbpata <-as.data.frame(t(dbpata))
 dbpata <- decostand(dbpata, method = 'hellinger')
 family_bray<-vegdist(dbpata, method="bray")
@@ -19,6 +21,14 @@ points <-cbind(points, groupata[match(rownames(points), rownames(groupata)), ])
 x<-adonis(dbpata~location,data = groupata)
 x$aov.tab
 points$location<-factor(points$location,levels=c('Raw', 'Finished', 'Upstream','Midstream','Downstream'))
+
+RColorBrewer::display.brewer.all()
+display.brewer.pal(n=12,name="Set3")
+brewer.pal(n=12,name="Set3")
+color<-c("#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69")
+#if you use the Rcolor brewer,你需要利用scale_color_brewer(palette="paletee_name")
+#自選顏色的話用Scale_color_manual(values=color_vector)
+
 ggplot(points, aes(x=Dim1, y=Dim2,colour=location))+
   theme_bw()+
   geom_point(size=3)+#geom_text(aes(label=sample_ID),size=3,color="black",)+
@@ -26,11 +36,4 @@ ggplot(points, aes(x=Dim1, y=Dim2,colour=location))+
   labs(x=paste("PCoA 1 (", format(100 * eig[1] / sum(eig), digits=4), "%)", sep=""),
        y=paste("PCoA 2 (", format(100 * eig[2] / sum(eig), digits=4), "%)", sep=""),
        title="Bray_curtis PCoA")+theme(axis.title = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
-RColorBrewer::display.brewer.all()
-display.brewer.pal(n=12,name="Set3")
-brewer.pal(n=12,name="Set3")
-color<-c("#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69")
-#if you use the Rcolor brewer,你需要利用scale_color_brewer(palette="paletee_name")
-#自選顏色的話用Scale_color_manual(values=color_vector)
-?scale_color_brewer()
-?theme_bw
+
