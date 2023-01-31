@@ -2,23 +2,28 @@ library("openxlsx")
 library("Hmisc")
 library("tidyverse")
 data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=1,rowNames=F,sep.names=" ")
-data_taxa<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=4,rowNames=F,sep.names=" ")
+data_taxa<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=3,rowNames=F,sep.names=" ")
 #ARGdata名稱處理
 data_ARGsub<-data_ARGsub%>%
   separate(`ARGs abundance normalization aganist 16S`,into=c("type","subtype"),sep="__")
 rownames(data_ARGsub)<-data_ARGsub$subtype
+argclass<-data_ARGsub[,1:2]
 data_ARGsub$type<-NULL
 data_ARGsub$subtype<-NULL
-argclass<-data_ARGsub[,1:2]
 #taxa名稱處理
 data_taxa<-data_taxa%>%
-  separate(Family,into=c("n","Family"),sep = "__")
-rownames(data_taxa)<-data_taxa$Family
+  separate(Genus,into=c("n","Genus"),sep = "__")
+rownames(data_taxa)<-data_taxa$Genus
 data_taxa$n<-NULL
-data_taxa$Family<-NULL
+data_taxa$Genus<-NULL
+#taxa top 20 abundance
+data_taxa$sum<-apply(data_taxa,1,sum)
+data_taxa<-arrange(data_taxa, desc(sum))
+data_taxa<-data_taxa[1:20,]
+data_taxa$sum<-NULL
+#merge two df
 data_ARGsub<-as.data.frame(t(data_ARGsub))
 data_taxa<-as.data.frame(t(data_taxa))
-#merge two df
 data_ARGsub$sample<-rownames(data_ARGsub)
 data_taxa$sample<-rownames(data_taxa)
 data<-merge(data_taxa,data_ARGsub)
