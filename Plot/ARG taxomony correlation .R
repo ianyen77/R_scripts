@@ -2,14 +2,29 @@ library("openxlsx")
 library("Hmisc")
 library("tidyverse")
 data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=1,rowNames=F,sep.names=" ")
-data_taxa<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=3,rowNames=F,sep.names=" ")
+data_taxa<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=4,rowNames=F,sep.names=" ")
 #ARGdata名稱處理
 data_ARGsub<-data_ARGsub%>%
   separate(`ARGs abundance normalization aganist 16S`,into=c("type","subtype"),sep="__")
 rownames(data_ARGsub)<-data_ARGsub$subtype
 data_ARGsub$type<-NULL
+data_ARGsub$subtype<-NULL
 argclass<-data_ARGsub[,1:2]
-
+#taxa名稱處理
+data_taxa<-data_taxa%>%
+  separate(Family,into=c("n","Family"),sep = "__")
+rownames(data_taxa)<-data_taxa$Family
+data_taxa$n<-NULL
+data_taxa$Family<-NULL
+data_ARGsub<-as.data.frame(t(data_ARGsub))
+data_taxa<-as.data.frame(t(data_taxa))
+#merge two df
+data_ARGsub$sample<-rownames(data_ARGsub)
+data_taxa$sample<-rownames(data_taxa)
+data<-merge(data_taxa,data_ARGsub)
+rownames(data)<-data$sample
+data$sample<-NULL
+data<-as.data.frame(t(data))
 #計算出現次數
 data_clean<-data
 data_clean[data_clean!=0]<-1
@@ -22,9 +37,14 @@ times_over8<-as.data.frame(t(times_over8))
 #因為rcorr()他的input要是matrix
 data.matrix<-as.matrix(times_over8)
 corr<-rcorr(data.matrix,type= 'spearman')
+#P值修正
+corr_P_adj <- p.adjust(corr$P, method = 'BH')
+matrix_corr_P_adj <- matrix(corr_P_adj,nrow=(length(corr$P)**0.5))
+colnames(matrix_corr_P_adj)<-colnames(corr$P)
+rownames(matrix_corr_P_adj) <- rownames(corr$P)
 #corr<-as.list(corrx)
-corr$P[corr$P >= 0.05] <- -1
-corr$P[corr$P < 0.05 & corr$P >= 0] <- 1
+corr$P[corr$P >= 0.01] <- -1
+corr$P[corr$P < 0.01 & corr$P >= 0] <- 1
 corr$P[corr$P == -1] <- 0
 #我們先輸出一次有顯著相關但相關性未必足夠的矩陣
 corr_significiant<-corr$r * corr$P
@@ -40,3 +60,11 @@ corr_final[!lower.tri(corr_final)] <- 0
 corr_final[is.na(corr_final)]<-0
 corr_final.dataframe<-as.data.frame(corr_final)
 write.xlsx(corr_final.dataframe, 'C:/Users/USER/Desktop/小型test.xlsx',rowNames=T,colNames=T)
+
+
+#調整node table
+argclass$ARG<-rep("ARGs",189)
+colnames(argclass)[2]<-"id"
+node<-read.xlsx("C:/Users/USER/Desktop/node.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
+node<-merge(node,argclass,all.x = T)
+write.xlsx(node,"C:/Users/USER/Desktop/node_ad.xlsx")
