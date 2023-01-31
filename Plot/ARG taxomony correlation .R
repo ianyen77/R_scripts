@@ -1,11 +1,27 @@
 library("openxlsx")
-#這邊要在特別注意一下輸入的參數，要調整你的欄名跟列名，sep.names是在設定你要用什麼取代data中的空格
-data<-read.xlsx("C:/Users/USER/Desktop/台水計畫raw data for r test.xlsx",sheet=1,rowNames=T,sep.names=" ")
-#相關性檢驗
-library(Hmisc)
+library("Hmisc")
+library("tidyverse")
+data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=1,rowNames=F,sep.names=" ")
+data_taxa<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=3,rowNames=F,sep.names=" ")
+#ARGdata名稱處理
+data_ARGsub<-data_ARGsub%>%
+  separate(`ARGs abundance normalization aganist 16S`,into=c("type","subtype"),sep="__")
+rownames(data_ARGsub)<-data_ARGsub$subtype
+data_ARGsub$type<-NULL
+argclass<-data_ARGsub[,1:2]
+
+#計算出現次數
+data_clean<-data
+data_clean[data_clean!=0]<-1
+data_clean$times_discover_in_all<-apply(data_clean,1,sum)
+data$times_discover<-data_clean$times_discover_in_all
+#這邊可以篩選出現超過幾次的data
+times_over8<-filter(data,times_discover>=8)
+times_over8$times_discover<-NULL
+times_over8<-as.data.frame(t(times_over8))
 #因為rcorr()他的input要是matrix
-data.matrix<-as.matrix(data)
-corr<-rcorr(data.matrix,type= 'pearson')
+data.matrix<-as.matrix(times_over8)
+corr<-rcorr(data.matrix,type= 'spearman')
 #corr<-as.list(corrx)
 corr$P[corr$P >= 0.05] <- -1
 corr$P[corr$P < 0.05 & corr$P >= 0] <- 1
