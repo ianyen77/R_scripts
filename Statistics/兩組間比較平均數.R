@@ -40,7 +40,7 @@ homo<-leveneTest(varaible_and_group,data = data)
 }
 #我們必須手動去看是否是常態及同質的，如果兩者皆符合，那我們可以使用t-test
 pairwise.t.test(data$sum,data$location,p.adjust.method = "BH")
-
+?pairwise.t.test
 #如果兩者中有一不符合，那我們得使用wilcoxon rank sum test
 pairwise.wilcox.test(data$bacitracin,data$location,p.adjust.method = "BH")
 wilcox.test(Data.levels[[5]]$bacitracin,Data.levels[[4]]$bacitracin,p.adjust.method = "BH")
