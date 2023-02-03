@@ -1,7 +1,7 @@
 library("openxlsx")
 library("Hmisc")
 library("tidyverse")
-data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=1,rowNames=F,sep.names=" ")
+data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/plot/ARG/ARG correlation/ARG taxon correlation.xlsx",sheet=1,rowNames=F,sep.names=" ")
 data_taxa<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=3,rowNames=F,sep.names=" ")
 #ARGdata名稱處理
 data_ARGsub<-data_ARGsub%>%
