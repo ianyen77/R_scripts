@@ -7,19 +7,27 @@ library(RColorBrewer)
 #針對mapoutput進行一些預處理，並把它變成galaxy指定的格式
 dbpata<-read.xlsx("C:/Users/USER/Desktop/kraken2 mpaout for lefse.xlsx",sheet=3,rowNames=F,colNames=T,sep.names=" ")
 rownames(dbpata)<-dbpata$`#Classification`
-dbpata$`#Classification`<-gsub(pattern = "k__",replacement = "",x=dbpata$`#Classification`)
-dbpata$`#Classification`<-gsub(pattern = "p__",replacement = "",x=dbpata$`#Classification`)
-dbpata$`#Classification`<-gsub(pattern = "c__",replacement = "",x=dbpata$`#Classification`)
-dbpata$`#Classification`<-gsub(pattern = "o__",replacement = "",x=dbpata$`#Classification`)
-dbpata$`#Classification`<-gsub(pattern = "f__",replacement = "",x=dbpata$`#Classification`)
-dbpata$`#Classification`<-gsub(pattern = "g__",replacement = "",x=dbpata$`#Classification`)
-dbpata$`#Classification`<-gsub(pattern = "s__",replacement = "",x=dbpata$`#Classification`)
+dbpata$`#Classification`<-NULL
+dbpata [ dbpata < 0.0001 ] <- 0
+dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
+tax<-rownames(dbpata)
+dbpata<-cbind(tax,dbpata)
+dbpata
+dbpata$tax<-gsub(pattern = "k__",replacement = "",x=dbpata$tax)
+dbpata$tax<-gsub(pattern = "p__",replacement = "",x=dbpata$tax)
+dbpata$tax<-gsub(pattern = "c__",replacement = "",x=dbpata$tax)
+dbpata$tax<-gsub(pattern = "o__",replacement = "",x=dbpata$tax)
+dbpata$tax<-gsub(pattern = "f__",replacement = "",x=dbpata$tax)
+dbpata$tax<-gsub(pattern = "g__",replacement = "",x=dbpata$tax)
+dbpata$tax<-gsub(pattern = "s__",replacement = "",x=dbpata$tax)
 id<-colnames(dbpata)
 id[1]<-"id"
 dbpata<-rbind(id,dbpata)
 Location<-c("Location","Raw","Raw","Raw","Finished","Finished","Finished","Upstream","Upstream","Upstream","Midstream","Midstream","Midstream","Downstream","Downstream","Downstream")
 dbpata<-rbind(Location,dbpata)
+rownames(dbpata)<-NULL
 write.xlsx(dbpata,"C:/Users/USER/Desktop/taxon.lefse.xlsx")
+str(dbpata)
 #以上是lefse 的preprocress，之後須到galaxy上跑，跑完再載下來畫圖
 
 #載入分析結果，繪圖(多組group,雙組可再參考學長的腳本)
