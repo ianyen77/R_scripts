@@ -24,8 +24,9 @@ eig
 points<-as.data.frame(points)
 points <-cbind(points, groupata[match(rownames(points), rownames(groupata)), ])
 #用Adonis 來檢定組間差異是不是顯著的
-x<-adonis(dbpata~location,data = groupata)
-x$aov.tab
+x<-adonis2(dbpata~location,data = groupata)
+x
+dbpata_adonis <- paste0("adonis R2: ",round(x$R2,2), "; P-value: ", x$`Pr(>F)`)
 #檢驗adnois，我們需要檢驗一下這個adonis的結果是不是因為分組數據的離散程度不同造成的
 dbpata.dis <- vegdist(dbpata, method="bray", binary=F)
 dispersion <- betadisper(dbpata.dis, group=groupata$location)
