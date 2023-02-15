@@ -5,17 +5,17 @@ library(openxlsx)
 library(RColorBrewer)
 library(scatterplot3d)
 library(pairwiseAdonis)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/rel_abundance/species_rel_table.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
-groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
-arg_data<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/ARG/argoap_out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 #因為species太多了，我們把小於0.01%的species清掉
 dbpata[dbpata<0.0001]<-0
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
 dbpata1<-as.data.frame(apply(dbpata,2,function(x) x/sum(x)))
-#做一下hellinger
-dbpata <- decostand(dbpata, method = 'hellinger')
+dbpata<-dbpata1
 #以上不一定需要，看你分析的DATA
-dbpata <-as.data.frame(t(dbpata1))
+dbpata <-as.data.frame(t(dbpata))
+#Hellinger不一定需要，ARG不用
+dbpata <- decostand(dbpata, method = 'hellinger')
 family_bray<-vegdist(dbpata, method="bray")
 length_1<-length(rownames(dbpata))
 pcoa = cmdscale(family_bray, k=(length_1-1), eig=TRUE)
