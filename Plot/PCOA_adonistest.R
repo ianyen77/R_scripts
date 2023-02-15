@@ -8,6 +8,7 @@ groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/n
 #這個不一定要，下面這個只是把全部都是0的rows清掉
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
 dbpata <-as.data.frame(t(dbpata))
+#Hellinger轉換不是每個都需要的，通常指有taxa需要
 dbpata <- decostand(dbpata, method = 'hellinger')
 family_bray<-vegdist(dbpata, method="bray")
 length_1<-length(rownames(dbpata))
