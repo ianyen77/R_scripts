@@ -3,8 +3,8 @@ library(ecodist)
 library(ggplot2)
 library(openxlsx)
 library(RColorBrewer)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/ARG/argoap_out.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
-groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 #這個不一定要，下面這個只是把全部都是0的rows清掉
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
 dbpata <-as.data.frame(t(dbpata))
@@ -20,8 +20,12 @@ points <-cbind(points, groupata[match(rownames(points), rownames(groupata)), ])
 #用Adonis 來檢定組間差異是不是顯著的
 x<-adonis(dbpata~location,data = groupata)
 x$aov.tab
+dbpata.dist <- vegdist(dbpata, method="bray", binary=F)
+#檢驗Adonis是不是因為betadispersion造成的
+dispersion <- betadisper(dbpata.dist, group=groupata$location)
+permutest(dispersion)
+#開始畫圖，先選色
 points$location<-factor(points$location,levels=c('Raw', 'Finished', 'Upstream','Midstream','Downstream'))
-
 RColorBrewer::display.brewer.all()
 display.brewer.pal(n=12,name="Set3")
 brewer.pal(n=12,name="Set3")
