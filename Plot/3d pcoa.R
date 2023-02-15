@@ -12,9 +12,10 @@ arg_data<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/A
 dbpata[dbpata<0.0001]<-0
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
 dbpata1<-as.data.frame(apply(dbpata,2,function(x) x/sum(x)))
-dbpata <-as.data.frame(t(dbpata1))
 #做一下hellinger
 dbpata <- decostand(dbpata, method = 'hellinger')
+#以上不一定需要，看你分析的DATA
+dbpata <-as.data.frame(t(dbpata1))
 family_bray<-vegdist(dbpata, method="bray")
 length_1<-length(rownames(dbpata))
 pcoa = cmdscale(family_bray, k=(length_1-1), eig=TRUE)
