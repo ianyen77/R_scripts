@@ -3,7 +3,7 @@ library("openxlsx")
 library("tidyverse")
 library("ggplot2")
 #記得輸入前要先把mpa的樣品名稱改掉
-taxon_mpa_format<-read.xlsx(xlsxFile = "C://Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/kraken2_mpaout.xlsx",sheet=1,colNames = T)
+taxon_mpa_format<-read.xlsx(xlsxFile = "C://Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/kraken2_mapout.xlsx",sheet=1,colNames = T)
 taxon_mpa_format<-taxon_mpa_format%>%
   filter(str_detect(`#Classification`,pattern="k__Bacteria"))
 
@@ -14,7 +14,7 @@ write.xlsx(taxon_mpa1,"C://Users/USER/Desktop/taxon_adjust_mpa.xlsx")
 #在這之後我們需要去excel手動調整將正確的分類放在正確的column
 #所有的column下面的分類都要跟column有對應上
 
-taxon_mpa<-read.xlsx(xlsxFile = "C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/taxon_adjust_mpa.xlsx",sheet=1,colNames = T)
+taxon_mpa<-read.xlsx(xlsxFile = "C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/taxon_adjust_mpa(adjust).xlsx",sheet=1,colNames = T)
 
 #Phyla relative abundance table
 phyla_table<-taxon_mpa%>% 
