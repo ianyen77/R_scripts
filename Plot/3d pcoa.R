@@ -5,7 +5,7 @@ library(openxlsx)
 library(RColorBrewer)
 library(scatterplot3d)
 library(pairwiseAdonis)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
 groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 #因為species太多了，我們把小於0.01%的species清掉
 dbpata[dbpata<0.0001]<-0
@@ -45,15 +45,17 @@ color<-c("#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69")
 #2dpcoa
 ggplot(points, aes(x=Dim1, y=Dim2,colour=location))+
   theme_bw()+
-  geom_point(size=3)+#geom_text(aes(label=sample_ID),size=3,color="black",)+
-  scale_color_manual(values = color)+geom_hline(yintercept=0)+ geom_vline(xintercept=0)+theme(panel.grid=element_blank())+
+  geom_point(size=3,alpha=0.7)+#geom_text(aes(label=sample_ID),size=3,color="black",)+
+  scale_color_manual(values = color)+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
+  geom_hline(yintercept = 0, color = 'gray', linetype = 2,) +
   labs(x=paste("PCoA 1 (", format(100 * eig[1] / sum(eig), digits=4), "%)", sep=""),
        y=paste("PCoA 2 (", format(100 * eig[2] / sum(eig), digits=4), "%)", sep=""),
-       title="Bray_curtis PCoA")+theme(axis.title = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
+       title="Bray_curtis PCoA")+theme(axis.title = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual("Location",values =color)
 #3dpoca
 colors=color[as.numeric(points$location)]
 colnames(points)[1]<-paste("PCoA 1 (", format(100 * eig[1] / sum(eig), digits=4), "%)", sep="")
 colnames(points)[2]<-paste("PCoA 2 (", format(100 * eig[2] / sum(eig), digits=4), "%)", sep="")
 colnames(points)[3]<-paste("PCoA 3 (", format(100 * eig[3] / sum(eig), digits=4), "%)", sep="")
-scatterplot3d(points[,1:3],color=colors,main="Bray_curtis PCoA",pch=16,cex.symbols = 1.3)
+scatterplot3d(points[,1:3],color=colors,main="Bray_curtis PCoA",pch=16,cex.symbols = 1.3,alpha-blending=0.7)
 legend("bottom",col=color,legend=levels(points$location),pt.bg = colors,pch=16,inset=-0.17,xpd =T,horiz = T)
+?scatterplot3d
