@@ -1,7 +1,7 @@
 library(openxlsx)
 library(tidyverse)
 #這是一個提
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/ARG/argoap_out.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
 #dbpata<-as.data.frame(t(dbpata))
 output<- vector(mode = "list")
 #第一個回圈可以計算各別sample
@@ -21,4 +21,5 @@ for(i in seq(1,15,by =3)){
   output2<-c(output2,list1)
 }
 names(output2)<-c("Raw","Finished","Upstream","Midstream","Downstream")
-write.xlsx(output2,file="c:/Users/USER/Desktop/xx.xlsx",sep="")
+
+write.xlsx(output2,file="c:/Users/USER/Desktop/ARG_occurance.xlsx")
