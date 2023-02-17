@@ -1,9 +1,9 @@
 library(openxlsx)
 library(tidyverse)
-pathogen_genus<-read.xlsx("c:/Users/USER/Desktop/pathogen list.xlsx",sheet=2,colNames = T)
-pathogen_species<-read.xlsx("c:/Users/USER/Desktop/pathogen list.xlsx",sheet=1,colNames = T)
-data_species<-read.xlsx("c:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/rel_abundance/species_rel_table.xlsx",sheet=1,colNames = T)
-data_genus<-read.xlsx("c:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/Taxa/rel_abundance/genus_rel_table.xlsx",sheet=1,colNames = T)
+pathogen_genus<-read.xlsx("c:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/pathogen/pathogen list.xlsx",sheet=2,colNames = T)
+pathogen_species<-read.xlsx("c:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/pathogen/pathogen list.xlsx",sheet=1,colNames = T)
+data_species<-read.xlsx("c:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/species_rel_table.xlsx",sheet=1,colNames = T)
+data_genus<-read.xlsx("c:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/genus_rel_table.xlsx",sheet=1,colNames = T)
 #transform species data
 data_species<-data_species[,-(1:6)]
 data_species<-data_species%>%
