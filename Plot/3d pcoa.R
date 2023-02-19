@@ -13,7 +13,8 @@ groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/n
 #dbpata1<-as.data.frame(apply(dbpata,2,function(x) x/sum(x)))
 #dbpata<-dbpata1
 #以上不一定需要，看你分析的DATA
-
+rownams(dbpata)<-dbpata$Species
+dbpata<-dbpata[,-(1:7)]
 dbpata <-as.data.frame(t(dbpata))
 #Hellinger不一定需要，ARG不用
 dbpata <- decostand(dbpata, method = 'hellinger')

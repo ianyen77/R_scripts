@@ -20,7 +20,7 @@ alphadiversity$sample<-rownames(alphadiversity)
 write.xlsx(alphadiversity,"C:/Users/USER/Desktop/alphadiversity")
 #poltdata transformation
 alphadiversity_plotdata<-pivot_longer(alphadiversity,cols = c(richness,shannon,simpson,invsimpson),names_to = "index")
-alphadiversity_plotdata$index<-factor(alphadiversity_plotdata$index,levels = c("richness","shannon","simpson","invsimpson"),labels=c("Richness","Shannon","Simpson","Iinvsimpson"))
+alphadiversity_plotdata$index<-factor(alphadiversity_plotdata$index,levels = c("richness","shannon","simpson","invsimpson"),labels=c("Richness","Shannon","Simpson","Invsimpson"))
 alphadiversity_plotdata_bar<-alphadiversity_plotdata%>%
   group_by(location,index)%>%
   summarise(mean=mean(value),std=sd(value))

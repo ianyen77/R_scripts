@@ -14,4 +14,4 @@ data_stat<-merge(data,group,by = "Sample",all.x = T)%>%
   summarise(type_mean=mean(abundance),type_std=sd(abundance))
 data_stat$Location<-factor(data_stat$Location,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
 ggplot(data_stat,aes(x=Location,y=type_mean,ymin=type_mean-type_std,ymax=type_mean+type_std))+geom_point()+geom_line(group=1)+theme_bw()+geom_errorbar(width=0.1)+
-  facet_wrap(~`ARGs type`,nrow = 5,scales = 'free')+labs(x="Location",y="ARGs abundance normalization aganist 16S")+theme(axis.title = element_text(size=13),axis.text =element_text(size=11.5),strip.text = element_text(size = 11))
+  facet_wrap(~`ARGs type`,nrow = 5,scales = 'free')+labs(x="Location",y="ARGs abundance normalization aganist 16S")+theme(axis.title = element_text(size=13),axis.text =element_text(size=11.5),strip.text = element_text(size = 13))
