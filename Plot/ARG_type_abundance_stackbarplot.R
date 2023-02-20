@@ -17,7 +17,7 @@ plotdata<-data%>%
   gather(key="sample",value="amount",1:15)
 ggplot(plotdata)+
   geom_bar(aes(x=sample,y=amount,fill=`ARGs type`,color=`ARGs type`),stat="identity",alpha=0.9)+
-  labs(x=NULL,y=NULL)+scale_fill_brewer(palette = "Set3")+scale_color_brewer(palette = "Set3")+theme(axis.title = element_text(size=13),axis.text = element_text(size=13),legend.title= element_text(size=12),legend.text = element_text(size=12))+theme_bw()+xlab("Sample")+ylab("ARGs abundance normalization aganist 16S")+theme_bw()
+  labs(x=NULL,y=NULL)+scale_fill_brewer(palette = "Set3")+scale_color_brewer(palette = "Set3")+theme(axis.title = element_text(size=13),axis.text = element_text(size=13),legend.title= element_text(size=12),legend.text = element_text(size=12))+theme_bw()+xlab("Sample")+ylab("ARGs abundance normalization against 16S")+theme_bw()
 
 RColorBrewer::display.brewer.all()
 display.brewer.pal(n=12,name="Set3")
@@ -45,5 +45,5 @@ plotdata%>%
   summarise(mean=mean(amount),std=sd(amount))%>%
   ggplot(aes(x=location,y=mean,ymin=mean-std, ymax=mean+std,fill=`ARGs type`))+
   geom_bar(aes(y=mean,color=`ARGs type`),position="dodge",stat="identity",alpha=0.7,width = 0.9)+geom_errorbar(width=0.9,position=position_dodge())+theme_bw()+
-  labs(x=NULL,y=NULL)+scale_fill_brewer(palette = "Set3")+scale_color_brewer(palette = "Set3")+theme(axis.title = element_text(size=13),axis.text = element_text(size=13),legend.title= element_text(size=12),legend.text = element_text(size=12))+xlab("Sample")+ylab("ARGs abundance normalization aganist 16S")
+  labs(x=NULL,y=NULL)+scale_fill_brewer(palette = "Set3")+scale_color_brewer(palette = "Set3")+theme(axis.title = element_text(size=13),axis.text = element_text(size=13),legend.title= element_text(size=12),legend.text = element_text(size=12))+xlab("Sample")+ylab("ARGs abundance normalization against 16S")
   

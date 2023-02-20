@@ -12,12 +12,14 @@ dbpata<-dbpata[order(dbpata$sum,decreasing = T),]
 dbpata<-dbpata[-(11:nrow(dbpata)),]
 dbpata$sum<-NULL
 dbpata$`ARGs Type`<-rownames(dbpata)
-dbpata$`ARGs Type`[dbpata$`ARGs Type`=="macrolide-lincosamide-streptogramin"]<-"MLS"
+dbpata$`ARGs Type`<-str_to_title(dbpata$`ARGs Type`)
+dbpata$`ARGs Type`[dbpata$`ARGs Type`=="Macrolide-Lincosamide-Streptogramin"]<-"MLS"
+dbpata$`ARGs Type`[dbpata$`ARGs Type`=="Beta-Lactam"]<-"Beta-lactam"
 dbpata1<-gather(data =dbpata, key ="sample",value = "value",1:(ncol(dbpata)-1))
 plot<-dbpata1%>%
   mutate(type=fct_reorder(`ARGs Type`,desc(value)))%>%
   ggplot(aes(x=type,y=value))+geom_boxplot(fill="#BEBADA",alpha=0.7)+
-  theme_bw()+geom_point(size=1)+labs(x="ARGs Type",y="ARGs abundance normalization aganist 16S")+theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
+  theme_bw()+geom_point(size=1)+labs(x="ARGs Type",y="ARGs abundance normalization against 16S")+theme(axis.title = element_text(size=12.5),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
 plot
 
 RColorBrewer::display.brewer.all()
