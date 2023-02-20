@@ -29,5 +29,10 @@ row_ano$V1<-NULL
 #畫圖
 data<-data[,-(1:2)]
 data_log<-log10(data) 
-pheatmap(data_log,cluster_rows = F,cluster_cols = F,annotation_row = data_argname,annotation_col = row_ano)
+pheatmap(data_log,cluster_rows = F,cluster_cols = F)
 
+pheatmap(data_log,cluster_rows = F,cluster_cols = F,color=colorRampPalette(c("#FCFBFD", "#BCBDDC", "#54278F"))(50))
+
+RColorBrewer::display.brewer.all()
+RColorBrewer::display.brewer.pal(n=9,name="Purples")
+RColorBrewer::brewer.pal(n=12,name="Purples")

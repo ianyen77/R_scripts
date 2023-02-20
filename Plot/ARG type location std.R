@@ -13,5 +13,7 @@ data_stat<-merge(data,group,by = "Sample",all.x = T)%>%
   group_by(`ARGs type`,Location)%>%
   summarise(type_mean=mean(abundance),type_std=sd(abundance))
 data_stat$Location<-factor(data_stat$Location,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
+data_stat$`ARGs type`[data_stat$`ARGs type`=="Macrolide-Lincosamide-Streptogramin"]<-"Macrolide-lincosamide-streptogramin"
+data_stat$`ARGs type`[data_stat$`ARGs type`=="Beta-Lactam"]<-"Beta-lactam"
 ggplot(data_stat,aes(x=Location,y=type_mean,ymin=type_mean-type_std,ymax=type_mean+type_std))+geom_point()+geom_line(group=1)+theme_bw()+geom_errorbar(width=0.1)+
-  facet_wrap(~`ARGs type`,nrow = 5,scales = 'free')+labs(x="Location",y="ARGs abundance normalization aganist 16S")+theme(axis.title = element_text(size=13),axis.text =element_text(size=11.5),strip.text = element_text(size = 13))
+  facet_wrap(~`ARGs type`,nrow = 5,scales = 'free')+labs(x="Location",y="ARGs abundance normalization against 16S")+theme(axis.title = element_text(size=13),axis.text =element_text(size=11.5),strip.text = element_text(size = 13))
