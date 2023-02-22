@@ -5,50 +5,52 @@ library(openxlsx)
 library(ggfortify)
 library(tidyverse)
 dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
-envata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/family_rel_table.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
+envata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/genus_rel_table.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
 groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
-envata<-envata[,-c(1:4)]
-envata<-envata[,-c(2:3)]
-rownames(envata)<-envata$Family
-envata$Family<-NULL
+rownames(envata)<-envata$Genus
+envata<-envata[,-(1:7)]
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
+envata<-envata%>%
+  filter(apply(envata,1,function(x) sum(x>0)>=15))
 envata$sum<-apply(envata,1,sum)
 envata<-envata%>%
   arrange(desc(sum))
-envata<-envata[1:30,]
+envata<-envata[1:13,]
 envata$sum<-NULL
 envata <- decostand(envata, method = 'hellinger')
-sel <- decorana(dbpata)
-sel
 dbpata<-as.data.frame(t(dbpata))
 envata<-as.data.frame(t(envata))
-arg_cca<-cca(dbpata ~f__Mycobacteriaceae+f__Nitrobacteraceae+ f__Bacillaceae+ f__Sphingomonadaceae, data=envata)
-arg_cca
-summary(arg_cca)
-vif.cca(arg_cca)
-arg_cca.0<-cca(dbpata~1,data=envata)
-cca.step_forward<-step(arg_cca.0, scope = formula(arg_cca), test = "perm")
-mod.d <- step(arg_cca.0, scope = (list(lower = formula(arg_cca.0), upper = formula(arg_cca))))
-anova(arg_cca, by = "term")
+#判斷要用RDA還是CCA,if DCA1 length >4 use cca
+sel <- decorana(dbpata)
+sel
+
+arg_cca_0<-rda(dbpata ~1, data=envata)
+arg_cca_1<-rda(dbpata ~ g__Mycolicibacterium+g__Metabacillus+g__Nitrobacter+g__Nocardioides , data=envata)
+summary(arg_cca_1)
+vif.cca(arg_cca_1)
+mod.u <- step(arg_cca_0, scope = formula(arg_cca_1), test = "perm")# "perm"增加P值等参数
+mod.d <- step(arg_cca_0, scope = (list(lower = formula(arg_cca_0), upper = formula(arg_cca_1))))
+mod.d
+anova(arg_cca_1, by = "term")
 
 ## 繪圖數據提取
-s.RDA=arg_cca$CCA$u#提取樣本之特徵值
-B.rda.data=data.frame(arg_cca$CCA$u[,1:2],groupata$location)
+s.RDA=arg_cca_1$CCA$u#提取樣本之特徵值
+B.rda.data=data.frame(arg_cca_1$CCA$u[,1:2],groupata$location)
 B.rda.data=data.frame(B.rda.data,groupata$sample)
 colnames(B.rda.data)=c("RDA1","RDA2","Locatoin","Sample")
-B.rda1 =round(arg_cca$CCA$eig[1]/sum(arg_cca$CCA$eig)*100,2) #計算第一軸特徵值之佔比
-B.rda2 =round(arg_cca$CCA$eig[2]/sum(arg_cca$CCA$eig)*100,2) #計算第二軸特徵值之佔比
+B.rda1 =round(arg_cca_1$CCA$eig[1]/sum(arg_cca_1$CCA$eig)*100,2) #計算第一軸特徵值之佔比
+B.rda2 =round(arg_cca_1$CCA$eig[2]/sum(arg_cca_1$CCA$eig)*100,2) #計算第二軸特徵值之佔比
 s.RDA
-e.RDA=arg_cca$CCA$v # 提取變量特徵值
-env.RDA=arg_cca$CCA$biplot
-B.rda.env=arg_cca$CCA$biplot[,1:2]# 提取環境因子特徵值
+e.RDA=arg_cca_1$CCA$v # 提取變量特徵值
+env.RDA=arg_cca_1$CCA$biplot
+B.rda.env=arg_cca_1$CCA$biplot[,1:2]# 提取環境因子特徵值
 env.RDA
 # 檢查環境因子相關性
 ## 檢查整體環境因子對變量變化之相關性的顯著性
-RDA.perm=permutest(arg_cca,permu=999)
+RDA.perm=permutest(arg_cca_1,permu=999)
 RDA.perm
 ## 檢查整體環境因子對變量變化之相關性的顯著性
-RDA.env=envfit(arg_cca,envata,permu=999)
+RDA.env=envfit(arg_cca_1,envata,permu=999)
 RDA.env
 B.plot=ggplot(data=B.rda.data,aes(RDA1,RDA2),color=locatoin)+
   geom_point(aes(color=Locatoin,fill=Locatoin),size=2)+geom_text(aes(label=Sample),size=3,color="black")+
