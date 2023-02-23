@@ -1,42 +1,33 @@
 library(openxlsx)
 library(tidyverse)
 library(Hmisc)
-#必須先取得pathogen list
 data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=F,sep.names=" ")
 envata<-read.xlsx("C:/Users/USER/Desktop/envdata.xlsx",sheet=1)
+#去除all zeor row
+data_ARGsub<-data_ARGsub[apply(data_ARGsub[,2:16], 1, function(x) !all(x==0)),]
 #ARGdata名稱處理
 colnames(data_ARGsub)[1]<-"type"
 data_ARGsub<-data_ARGsub%>%
   separate(type,into=c("type","subtype"),sep="__")
 rownames(data_ARGsub)<-data_ARGsub$subtype
 argclass<-data_ARGsub[,1:2]
-data_ARGsub$type<-NULL
+#data_ARGsub$type<-NULL
 data_ARGsub_wide<-data_ARGsub%>%
-  gather(key = "sample",value = "amount",2:16)
+  gather(key = "sample",value = "amount",3:17)
 groupdata<-cbind(sample=c("T1-W-1","T1-W-2","T1-W-3","T2-W-1","T2-W-2","T2-W-3","T3-W-1","T3-W-2","T3-W-3","T4-W-1","T4-W-2","T4-W-3","T5-W-1","T5-W-2","T5-W-3"),location=c("Raw","Raw","Raw","Finished","Finished","Finished","Upstream","Upstream","Upstream","Midstream","Midstream","Midstream","Downstream","Downstream","Downstream"))
 data_ARGsub_wide<-merge(data_ARGsub_wide,groupdata,by="sample",all.x = T)
 data_ARGsub_wide$location<-factor(data_ARGsub_wide$location,levels=c('Raw', 'Finished', 'Upstream','Midstream','Downstream'))   
-################以下未寫
+data_forcorr_subtype<-data_ARGsub_wide%>%
+  group_by(subtype,location)%>%
+  summarise(mean=mean(amount))%>%
+  spread(key =subtype,value=mean)
 #merge two df
-data_ARGsub<-as.data.frame(t(data_ARGsub))
-data_taxa<-as.data.frame(t(data_taxa))
-data_ARGsub$sample<-rownames(data_ARGsub)
-data_taxa$sample<-rownames(data_taxa)
-data<-merge(data_taxa,data_ARGsub)
-rownames(data)<-data$sample
-data$sample<-NULL
+data<-merge(envata,data_forcorr_subtype,by="location",all = T)
+rownames(data)<-data$location
+data$location<-NULL
 data<-as.data.frame(t(data))
-#計算出現次數
-data_clean<-data
-data_clean[data_clean!=0]<-1
-data_clean$times_discover_in_all<-apply(data_clean,1,sum)
-data$times_discover<-data_clean$times_discover_in_all
-#這邊可以篩選出現超過幾次的data
-times_over8<-filter(data,times_discover>=8)
-times_over8$times_discover<-NULL
-times_over8<-as.data.frame(t(times_over8))
-#因為rcorr()他的input要是matrix
-data.matrix<-as.matrix(times_over8)
+write.xlsx(data,"C:/Users/USER/Desktop/env_aRG.xlsx",rowNames=T)
+data.matrix<-as.matrix(data)
 corr<-rcorr(data.matrix,type= 'spearman')
 #P值修正
 corr_P_adj <- p.adjust(corr$P, method = 'BH')
@@ -61,3 +52,4 @@ corr_final[!lower.tri(corr_final)] <- 0
 corr_final[is.na(corr_final)]<-0
 corr_final.dataframe<-as.data.frame(corr_final)
 write.xlsx(corr_final.dataframe, 'C:/Users/USER/Desktop/小型test.xlsx',rowNames=T,colNames=T)
+corr_final.dataframe<-corr_final.dataframe[apply(corr_final.dataframe[,2:16], 1, function(x) !all(x==0)),]

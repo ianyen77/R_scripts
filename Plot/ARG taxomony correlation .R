@@ -1,8 +1,8 @@
 library("openxlsx")
 library("Hmisc")
 library("tidyverse")
-data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/plot/ARG/ARG correlation/ARG taxon correlation.xlsx",sheet=1,rowNames=F,sep.names=" ")
-data_taxa<-read.xlsx("C:/Users/USER/Desktop/ARG taxon correlation.xlsx",sheet=3,rowNames=F,sep.names=" ")
+data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=F,sep.names=" ")
+data_taxa<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/genus_rel_table.xlsx",sheet=1,rowNames=F,sep.names=" ")
 #ARGdata名稱處理
 data_ARGsub<-data_ARGsub%>%
   separate(`ARGs abundance normalization aganist 16S`,into=c("type","subtype"),sep="__")
@@ -10,16 +10,17 @@ rownames(data_ARGsub)<-data_ARGsub$subtype
 argclass<-data_ARGsub[,1:2]
 data_ARGsub$type<-NULL
 data_ARGsub$subtype<-NULL
+data_ARGsub<-data_ARGsub[apply(data_ARGsub, 1, function(x) !all(x==0)),]
 #taxa名稱處理
 data_taxa<-data_taxa%>%
   separate(Genus,into=c("n","Genus"),sep = "__")
 rownames(data_taxa)<-data_taxa$Genus
-data_taxa$n<-NULL
-data_taxa$Genus<-NULL
+data_taxa<-data_taxa[,-(1:8)]
+data_taxa<-data_taxa[apply(data_taxa, 1, function(x) !all(x==0)),]
 #taxa top 20 abundance
 data_taxa$sum<-apply(data_taxa,1,sum)
 data_taxa<-arrange(data_taxa, desc(sum))
-data_taxa<-data_taxa[1:20,]
+data_taxa<-data_taxa[1:100,]
 data_taxa$sum<-NULL
 #merge two df
 data_ARGsub<-as.data.frame(t(data_ARGsub))
@@ -29,7 +30,7 @@ data_taxa$sample<-rownames(data_taxa)
 data<-merge(data_taxa,data_ARGsub)
 rownames(data)<-data$sample
 data$sample<-NULL
-data<-as.data.frame(t(data))
+#data<-as.data.frame(t(data))
 #計算出現次數
 data_clean<-data
 data_clean[data_clean!=0]<-1
@@ -40,7 +41,7 @@ times_over8<-filter(data,times_discover>=8)
 times_over8$times_discover<-NULL
 times_over8<-as.data.frame(t(times_over8))
 #因為rcorr()他的input要是matrix
-data.matrix<-as.matrix(times_over8)
+data.matrix<-as.matrix(data)
 corr<-rcorr(data.matrix,type= 'spearman')
 #P值修正
 corr_P_adj <- p.adjust(corr$P, method = 'BH')
@@ -57,19 +58,13 @@ corr_significiant<-corr$r * corr$P
 corr_significiant.dataframe<-as.data.frame(corr_significiant)
 write.xlsx(corr_significiant.dataframe, 'C:/Users/USER/Desktop/小型testp0.05.xlsx',rowNames=T,colNames=T,keepNA=T)
 #接著將計算出來之相關性大於0.8且p小於0.05者留下
-corr$r[corr$r < 0.8] <- 0
+corr$r[corr$r < 0.9] <- 0
 corr_final <-corr$r * corr$P
 #因為計算相關性只會有半邊的矩陣(上面是多餘的)所以我們只會需要下三角矩陣，且不需要對角矩陣(都為1)
 corr_final[!lower.tri(corr_final)] <- 0
 #有些數據因為是0所以算不出相關性(na)，我們把她去除
 corr_final[is.na(corr_final)]<-0
 corr_final.dataframe<-as.data.frame(corr_final)
+corr_final.dataframe<-corr_final.dataframe[apply(corr_final.dataframe, 1, function(x) !all(x==0)),]
 write.xlsx(corr_final.dataframe, 'C:/Users/USER/Desktop/小型test.xlsx',rowNames=T,colNames=T)
 
-
-#調整node table
-argclass$ARG<-rep("ARGs",189)
-colnames(argclass)[2]<-"id"
-node<-read.xlsx("C:/Users/USER/Desktop/node.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
-node<-merge(node,argclass,all.x = T)
-write.xlsx(node,"C:/Users/USER/Desktop/node_ad.xlsx")
