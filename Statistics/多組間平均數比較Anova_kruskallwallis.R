@@ -11,16 +11,15 @@ library("FSA")
 library("RColorBrewer")
 library("ggsignif")
 library("mdthemes")
-data<-read.xlsx(xlsxFile = "C:/Users/TUNG'S LAB/Desktop/統計腳本/練習DATA.xlsx",sheet=3)
+data<-read.xlsx(xlsxFile = "C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/argoap_out.xlsx",sheet=2,rowNames=T,colNames=T)
 #目的:比對某參數在兩個季節採樣間是否有顯著差異(排除原水)
-data_S<-filter(data,season=="S")
-data_W<-filter(data,season=="W")
-data_Y<-filter(data,type=="Y")
-data_M<-filter(data,type=="M")
-data_T<-filter(data,type=="T")
-#我們來測試一下溫度在三水場中有沒有顯著差異
+data<-data[apply(data, 1, function(x) !all(x==0)),] 
+data<-as.data.frame(t(data))
+data$sum<-apply(data,1,sum)
+data$location<-c("Raw","Raw","Raw","Finished","Finished","Finished","Upstream","Upstream","Upstream","Midstream","Midstream","Midstream","Downstream","Downstream","Downstream")
+data$location<-factor(data$location,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
 
-varaible_and_group<-Temperature~type#想測試的變數跟組別
+varaible_and_group<-kasugamycin~location#想測試的變數跟組別
 
 #我們必須先檢查數據是不是常態分布及變異數的同質性，才能決定我們要用的檢定方法。
 #檢查數據變異數的同質性，可以使用levenes test
@@ -58,7 +57,7 @@ if (a["p.value"]>0.05 && homo$`Pr(>F)`[1]>0.05){
   if (kruskal_output$p.value< 0.05){
   #kruskal-wallis 檢定 p <0.05，表示組間有差距，因此我們要使用事後檢定
   #我們可以使用Dunntest來看看是哪一組不同
-    PT = dunnTest(Temperature~type, data = data,
+    PT = dunnTest(varaible_and_group, data = data,
                   method="bh")    # Can adjust p-values; 
     print (PT)
   }else{
