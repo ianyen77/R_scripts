@@ -8,19 +8,20 @@ rownames(data)<-data$Species
 data<-data[,-(1:7)]
 data<-as.data.frame(t(data))
 #data<-gather(data = datakey="sample",value="abundance",2:16)
-richness<-as.data.frame(apply(data,1,function(x) sum(x>0)))
+richness<-apply(data,1,function(x) sum(x>0))
 shannon<-diversity(data,index="shannon")
 simpson<-(diversity(data,index="simpson"))
 invsimpson<-diversity(data,index = "invsimpson")
-alphadiversity<-cbind(richness,shannon,simpson,invsimpson)
-colnames(alphadiversity)[colnames(alphadiversity)=="apply(data, 1, function(x) sum(x > 0))"]<-"richness"
+Pielou_eveness<-(shannon/log(richness))
+alphadiversity<-as.data.frame(cbind(richness,shannon,simpson,invsimpson,Pielou_eveness))
 alphadiversity$location<-c("Raw","Raw","Raw","Finished","Finished","Finished","Upstream","Upstream","Upstream","Midstream","Midstream","Midstream","Downstream","Downstream","Downstream")
 alphadiversity$location<-factor(alphadiversity$location,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
 alphadiversity$sample<-rownames(alphadiversity)
-write.xlsx(alphadiversity,"C:/Users/USER/Desktop/alphadiversity")
+write.xlsx(alphadiversity,"C:/Users/USER/Desktop/taxa_alphadiversity.xlsx")
+alphadiversity$invsimpson<-NULL
 #poltdata transformation
-alphadiversity_plotdata<-pivot_longer(alphadiversity,cols = c(richness,shannon,simpson,invsimpson),names_to = "index")
-alphadiversity_plotdata$index<-factor(alphadiversity_plotdata$index,levels = c("richness","shannon","simpson","invsimpson"),labels=c("Richness","Shannon","Simpson","Invsimpson"))
+alphadiversity_plotdata<-pivot_longer(alphadiversity,cols = c(richness,shannon,simpson,Pielou_eveness),names_to = "index")
+alphadiversity_plotdata$index<-factor(alphadiversity_plotdata$index,levels = c("richness","shannon","simpson","Pielou_eveness"),labels=c("Richness","Shannon","Simpson","Pielou_eveness"))
 alphadiversity_plotdata_bar<-alphadiversity_plotdata%>%
   group_by(location,index)%>%
   summarise(mean=mean(value),std=sd(value))
