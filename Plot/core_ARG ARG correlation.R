@@ -17,7 +17,8 @@ data1<-data1[-(1:3),]
 ggplot(data = data1,aes(x=core_arg,y=total_arg))+
   geom_point(color="#8DD3C7",size=3)+geom_smooth(method="lm",color="#8DD3C7")+theme_bw()+
   labs(y = "Total ARGs abundnace aganists 16S",x="Core ARGs abundnace aganists 16S") +theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
-
+precentage<-data_core_sum/data_sum
+datax$precentage<-precentage
 summary(lm(total_arg ~ core_arg, data=data1))
 cor.test(data1$core_arg,data1$total_arg,method="pearson")
 display.brewer.pal(n=12,name="Set3")
