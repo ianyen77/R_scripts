@@ -20,7 +20,8 @@ RColorBrewer::display.brewer.all()
 RColorBrewer::display.brewer.pal(n=12,name="Set3")
 RColorBrewer::brewer.pal(n=12,name="Set3")
 #這樣設定是為了要配合前一張圖的顏色
-color<-c("#FFFFB3","#BEBADA","#FB8072","#80B1D3","#FDB462","#B3DE69","#FCCDE5","#D9D9D9","#BC80BD","#CCEBC5","#FFED6F")
+#color<-c("#FFFFB3","#BEBADA","#FB8072","#80B1D3","#FDB462","#B3DE69","#FCCDE5","#D9D9D9","#BC80BD","#CCEBC5","#FFED6F")
+color<-c( "#FFFFB3" ,"#BC80BD" , "#FB8072" ,"#80B1D3" ,"#FDB462" ,"#B3DE69" ,"#FCCDE5" ,"#D9D9D9","#BEBADA" ,"#CCEBC5" ,"#FFED6F")
 ggplot(data5)+
   geom_bar(aes(x=xx,y=yf,fill=`ARGs type`,color=`ARGs type`),alpha=0.85,stat="identity")+
   labs(x=NULL,y=NULL)+scale_fill_manual(values = color)+scale_color_manual(values = color)+theme_bw()+labs(x="Sample",y="Relative abundance")+theme(axis.title = element_text(size=12.5),legend.title= element_text(size=12.5),legend.text = element_text(size=12.5))
