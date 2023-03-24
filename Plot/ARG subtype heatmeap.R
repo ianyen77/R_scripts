@@ -30,8 +30,7 @@ row_ano$V1<-NULL
 data<-data[,-(1:2)]
 data_log<-log10(data) 
 pheatmap(data_log,cluster_rows = F,cluster_cols = F)
-
-pheatmap(data_log,cluster_rows = F,cluster_cols = F,color=colorRampPalette(c("#FCFBFD", "#BCBDDC", "#54278F"))(50))
+pheatmap(data_log,cluster_rows = F,cluster_cols = F,,color=colorRampPalette(c("#FCFBFD", "#BCBDDC", "#54278F"))(50)))
 
 RColorBrewer::display.brewer.all()
 RColorBrewer::display.brewer.pal(n=9,name="Purples")

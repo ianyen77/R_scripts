@@ -21,11 +21,15 @@ points <-cbind(points, groupata[match(rownames(points), rownames(groupata)), ])
 #用Adonis 來檢定組間差異是不是顯著的
 x<-adonis2(dbpata~location,data = groupata)
 x
+
 dbpata.dist <- vegdist(dbpata, method="bray", binary=F)
+
+
+
 #檢驗Adonis是不是因為betadispersion造成的
 dispersion <- betadisper(dbpata.dist, group=groupata$location)
 permutest(dispersion)
-dbpata_adonis <- paste0(" adonis R2: ",round(dune.div$R2,2), "; P-value: ", dune.div$`Pr(>F)`)
+dbpata_adonis <- paste0(" adonis R2: ",round(x$R2,2), "; P-value: ", x$`Pr(>F)`)
 #開始畫圖，先選色
 points$location<-factor(points$location,levels=c('Raw', 'Finished', 'Upstream','Midstream','Downstream'))
 RColorBrewer::display.brewer.all()
@@ -37,7 +41,7 @@ color<-c("#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69")
 
 ggplot(points, aes(x=Dim1, y=Dim2,colour=location))+
   theme_bw()+
-  geom_point(size=3)+#geom_text(aes(label=sample_ID),size=3,color="black",)+
+  geom_point(size=3,alpha=0.7)+#geom_text(aes(label=sample_ID),size=3,color="black",)+
   scale_color_manual(values = color)+geom_hline(yintercept=0)+ geom_vline(xintercept=0)+theme(panel.grid=element_blank())+
   labs(x=paste("PCoA 1 (", format(100 * eig[1] / sum(eig), digits=4), "%)", sep=""),
        y=paste("PCoA 2 (", format(100 * eig[2] / sum(eig), digits=4), "%)", sep=""),
