@@ -19,8 +19,8 @@ data$subtype<-factor(data$subtype,levels = c("intI1","IS26","IS91","IS1166","tnp
 plotdata<-data%>%
   gather(key="sample",value="amount",1:15)
 ggplot(plotdata)+
-  geom_bar(aes(x=sample,y=amount,fill=subtype,color=subtype),stat="identity",alpha=0.9)+
-  scale_fill_brewer(palette = "Set3")+scale_color_brewer(palette = "Set3")+theme(axis.title = element_text(size=13),axis.text = element_text(size=13),legend.title= element_text(size=12),legend.text = element_text(size=12))+theme_bw()+xlab("Sample")+ylab("ARGs abundance normalization against 16S")+theme_bw()+
+  geom_bar(aes(x=sample,y=amount,fill=subtype,color=subtype),stat="identity",alpha=0.7)+
+  scale_fill_brewer(palette = "Set3")+scale_color_brewer(palette = "Set3")+theme(axis.title = element_text(size=13),axis.text = element_text(size=13),legend.title= element_text(size=12),legend.text = element_text(size=12))+theme_bw()+xlab("Sample")+ylab("MGEs abundance normalization against 16S")+theme_bw()+
   guides(fill=guide_legend(title="MGEs"),color=guide_legend(title="MGEs"))
 RColorBrewer::display.brewer.all()
 display.brewer.pal(n=12,name="Set3")
