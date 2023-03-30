@@ -54,17 +54,17 @@ RDA.env=envfit(arg_cca_1,envata,permu=999)
 RDA.env
 color1<-c("#FB8072","#80B1D3","#BEBADA","#FDB462","#B3DE69")
 B.rda.data$Location<-factor(B.rda.data$Location,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
-B.plot=ggplot(data=B.rda.data,aes(RDA1,RDA2),color=locatoin)+
-  geom_point(aes(color=Locatoin,fill=Locatoin),size=2)+geom_text(aes(label=Sample),size=3,color="black")+
+B.plot=ggplot(data=B.rda.data,aes(RDA1,RDA2),color=Location)+
+  geom_point(aes(color=Location,fill=Location),size=3,alpha=0.7)+
   #scale_color_manual(values=c("red","blue","green","black","grey","darkgreen"))+
   labs(x=paste("RDA1",B.rda1," %"),y=paste("RDA2",B.rda2," %"))+scale_color_manual(values=color1)+
-  theme_bw()
-B.plot=B.plot+theme(panel.grid=element_blank())+
-  geom_hline(yintercept = 0)+geom_vline(xintercept = 0)+
-  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="grey ",size=1,
+  theme_bw()+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
+  geom_hline(yintercept = 0, color = 'gray', linetype = 2)
+B.plot=B.plot+
+  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="black",linewidth=0.01,alpha=0.7,
                arrow=arrow(angle = 35,length=unit(0.3,"cm")))+
   geom_text(data=B.rda.env,aes(x=B.rda.env[,1],y=B.rda.env[,2],label=rownames(B.rda.env)),size=2.6,
             colour="black",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))+
   theme(legend.position = "top")#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 print(B.plot)
-
+?geom_segment
