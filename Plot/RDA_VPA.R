@@ -79,8 +79,9 @@ anova(arg_cca_1,by = "term")
 anova(arg_cca_1,by = "axis",step=1000)
 
 #VPA
-
-rda.vpa <- varpart(dbpata, envata[,c(1:10)],envata[,c(11:12)],chisquare = FALSE) 
+#dbpata<-dbpata[-(1:3),]
+#envata<-envata[-(1:3),]
+rda.vpa <- varpart(dbpata, envata[,c(1:7)],envata[,c(11:12)],chisquare = FALSE) 
 str(rda.vpa)
 rda.vpa
 plot(rda.vpa)
@@ -92,7 +93,18 @@ colnames(B.rda.data)=c("RDA1","RDA2","Location","Sample")
 B.rda1 =round(arg_cca_1$CCA$eig[1]/sum(arg_cca_1$CCA$eig)*100,2) #計算第一軸特徵值之佔比
 B.rda2 =round(arg_cca_1$CCA$eig[2]/sum(arg_cca_1$CCA$eig)*100,2) #計算第二軸特徵值之佔比
 s.RDA
-e.RDA=arg_cca_1$CCA$v # 提取變量特徵值
+
+##繪製ARG subtype 在RDA上的位置
+e.RDA=as.data.frame(arg_cca_1$CCA$v)# 提取變量特徵值
+e.RDA$labels<-rownames(e.RDA)
+core_ARG_list<-c("aminoglycoside__aac(2')-I","bacitracin__bacA","beta-lactam__class A beta-lactamase","fosfomycin__fosX","fosmidomycin__rosB","macrolide-lincosamide-streptogramin__erm(39)","macrolide-lincosamide-streptogramin__macB","multidrug__acrB","multidrug__bpeF","multidrug__ceoB"
+,"multidrug__emrE","multidrug__mdtB","multidrug__mdtC","multidrug__mdtF","multidrug__mexF","multidrug__mexW","multidrug__multidrug_ABC_transporter","multidrug__multidrug_transporter","quinolone__mfpA","rifamycin__ADP-ribosylating transferase_arr","rifamycin__rifampin monooxygenase","tetracycline__tetV","unclassified__transcriptional regulatory protein CpxR cpxR","vancomycin__vanA","vancomycin__vanR","vancomycin__vanS"
+)
+e.RDA<-e.RDA[e.RDA$labels %in% core_ARG_list, ] 
+e.RDA<-e.RDA %>% 
+  separate(labels,into=c("type","subtype"),sep = "__")
+
+##
 env.RDA=arg_cca_1$CCA$biplot
 B.rda.env=arg_cca_1$CCA$biplot[,1:2]# 提取環境因子特徵值
 env.RDA
@@ -120,3 +132,15 @@ B.plot=B.plot+
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 B.plot
 
+e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))+
+  geom_point(size=1,alpha=0.7)+geom_text(aes(label=e.RDA$subtype),size=2)+
+  #scale_color_manual(values=c("red","blue","green","black","grey","darkgreen"))+
+  labs(x=paste("RDA1",B.rda1," %"),y=paste("RDA2",B.rda2," %"))+scale_color_manual(values=color1)+
+  theme_bw()+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
+  geom_hline(yintercept = 0, color = 'gray', linetype = 2)
+e.plot=e.plot+
+  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="#6A51A3",linewidth=0.3,alpha=0.7,
+               arrow=arrow(angle = 35,length=unit(0.3,"cm")))+
+  geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]+0.05),y=(B.rda.env[,2]),label=rownames(B.rda.env)),size=3,
+            colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
+e.plot
