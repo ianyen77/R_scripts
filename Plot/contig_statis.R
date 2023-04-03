@@ -24,6 +24,21 @@ color<- hcl.colors(14, "Sunset")
 ggplot(data_stat)+geom_bar(aes(x=Sample,y=orf_coverage,fill=type,color=type),stat="identity",alpha=0.7,width = 0.8)+
   scale_fill_manual("Location",values = color)+scale_color_manual("Location",values = color)+theme_bw()+labs(x="ARG Type",y="ARC coverage (x/GB)")+
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
+
+##core ARG list
+data_core<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/plot/venn/ARG_venn.xlsx")
+data_core1<-data_core$`Raw|Finished|Upstream|Midstream|Downstream`
+data_core1<-data_core1[!is.na(data_core1)]
+data_core1<-as.data.frame(cbind(data_core1,rep(1,26)))
+colnames(data_core1)<-c("ARGs.abundance.normalization.aganist.16S","core")
+core_arg_list<-as.data.frame(data_core1)%>%
+  separate(`ARGs.abundance.normalization.aganist.16S`,into=c("type","subtype"),sep = "__")
+core_arg_data_contig<-data_contig[data_contig$subtype %in% core_arg_list$subtype,]
+data_stat<-core_arg_data_contig%>% 
+  select(Sample,type,subtype,contig_phyla,contig_taxon.x)%>%
+  group_by(type,subtype,contig_taxon.x)%>%
+  count()
+  
 ##ARG orf subtype coverage
 data_stat<-data_contig%>%
   group_by(Sample,type,subtype)%>%
