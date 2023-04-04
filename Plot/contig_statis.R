@@ -7,15 +7,27 @@ data_contig<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DAT
 data_contig$contig_phyla[is.na(data_contig$contig_phyla)]<-"Unclassified"
 data_contig$contig_phyla[data_contig$contig_phyla == "Bacteria"]<-"Unclassified"
 
-##ARG orf type coverage
+##ARG orf type coverage---------------------------------------------------------------
 data_stat<-data_contig%>%
   group_by(Sample,type)%>%
   summarise_at(vars(orf_coverage), funs(sum))
-data_stat$Sample[data_stat$Sample=="T1"]<-"Raw"
-data_stat$Sample[data_stat$Sample=="T2"]<-"Finished"
-data_stat$Sample[data_stat$Sample=="T3"]<-"Upstream"
-data_stat$Sample[data_stat$Sample=="T4"]<-"Midstream"
-data_stat$Sample[data_stat$Sample=="T5"]<-"Downstream"
+#這個函式可以用來將Sample名稱轉成Location名稱
+convert_column_names <- function(data, column) {
+  column_names <- c("T1", "T2", "T3", "T4", "T5")
+  new_names <- c("Raw", "Finished", "Upstream", "Midstream", "Downstream")
+  
+  for (i in seq_along(column_names)) {
+    data[[column]][data[[column]] == column_names[i]] <- new_names[i]
+  }
+  
+  return(data)
+}
+data_stat <- convert_column_names(data_stat, "Sample")
+#data_stat$Sample[data_stat$Sample=="T1"]<-"Raw"
+#data_stat$Sample[data_stat$Sample=="T2"]<-"Finished"
+#data_stat$Sample[data_stat$Sample=="T3"]<-"Upstream"
+#data_stat$Sample[data_stat$Sample=="T4"]<-"Midstream"
+#data_stat$Sample[data_stat$Sample=="T5"]<-"Downstream"
 data_stat$type<-str_to_sentence(data_stat$type)
 data_stat$type[data_stat$type=="Macrolide-lincosamide-streptogramin"]<-"MLS"
 data_stat$Sample<-factor(data_stat$Sample,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
@@ -25,7 +37,7 @@ ggplot(data_stat)+geom_bar(aes(x=Sample,y=orf_coverage,fill=type,color=type),sta
   scale_fill_manual("Location",values = color)+scale_color_manual("Location",values = color)+theme_bw()+labs(x="ARG Type",y="ARC coverage (x/GB)")+
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
 
-##core ARG list
+##core ARG list----------------------------------------------------------------------------
 data_core<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/plot/venn/ARG_venn.xlsx")
 data_core1<-data_core$`Raw|Finished|Upstream|Midstream|Downstream`
 data_core1<-data_core1[!is.na(data_core1)]
@@ -39,7 +51,7 @@ data_stat<-core_arg_data_contig%>%
   group_by(type,subtype,contig_taxon.x)%>%
   count()
   
-##ARG orf subtype coverage
+##ARG orf subtype coverage-----------------------------------------------------
 data_stat<-data_contig%>%
   group_by(Sample,type,subtype)%>%
   summarise_at(vars(orf_coverage), funs(sum))
@@ -47,7 +59,7 @@ data_stat<-data_contig%>%
 data_stat<-data_contig%>%
   group_by(Sample,type,subtype,contig_phyla,contig_taxon.x)%>%
   summarise_at(vars(orf_coverage), funs(sum))
-
+#
   count(type)%>%
   mutate(type_ACC_percent=n/sum(n))
 data_phyl_stat<-data_contig%>%
