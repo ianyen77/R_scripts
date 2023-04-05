@@ -49,8 +49,31 @@ color1<-hcl.colors(7,"sunset")
 ggplot(data_stat)+geom_bar(aes(x=Sample,y=type_ACC_percent,fill=contig_phyla,color=contig_phyla),alpha=0.7,stat="identity",width=0.8)+
   scale_fill_manual("ARC Phyla",values = color1)+scale_color_manual("ARC Phyla",values = color1)+theme_bw()+labs(x="Location",y="Relative abundance")+
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
-
-
+#ARC host percentage(coverage)---------------------------
+data_stat<-data_contig%>%
+  select(Sample,contig_phyla,orf_coverage,contig_coverage)%>%
+  group_by(Sample,contig_phyla)%>%
+  summarise_at(vars(contig_coverage), funs(sum))%>%
+  group_by(Sample)%>%
+  mutate(sum_coverage=sum(contig_coverage))%>%
+  mutate(contig_coverage/sum_coverage)
+convert_column_names <- function(data, column) {
+  column_names <- c("T1", "T2", "T3", "T4", "T5")
+  new_names <- c("Raw", "Finished", "Upstream", "Midstream", "Downstream")
+  
+  for (i in seq_along(column_names)) {
+    data[[column]][data[[column]] == column_names[i]] <- new_names[i]
+  }
+  
+  return(data)
+}
+data_stat <- convert_column_names(data_stat, "Sample")
+color1<-hcl.colors(7,"sunset")
+data_stat$Sample<-factor(data_stat$Sample,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
+#relative abundance(ARC number)
+ggplot(data_stat)+geom_bar(aes(x=Sample,y=`contig_coverage/sum_coverage`,fill=contig_phyla,color=contig_phyla),alpha=0.7,stat="identity",width=0.8)+
+  scale_fill_manual("ARC Phyla",values = color1)+scale_color_manual("ARC Phyla",values = color1)+theme_bw()+labs(x="Location",y="Relative abundance")+
+  theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
 
 ##ARG orf type coverage---------------------------------------------------------------
 data_stat<-data_contig%>%
