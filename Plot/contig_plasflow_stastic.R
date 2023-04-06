@@ -1,13 +1,14 @@
 library(openxlsx)
 library(tidyverse)
 library(RColorBrewer)
-data_contig<-read.xlsx("C:/Users/USER/Desktop/ARC_analysis_phyla_plasflow.xlsx",sheet=1)
+library(ggsankey)
+data_contig<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARC_analysis/Plasflow/ARC_analysis_phyla_plasflow.xlsx",sheet=1)
 data_contig$contig_phyla[is.na(data_contig$contig_phyla)]<-"Unclassified"
 data_contig$contig_phyla[data_contig$contig_phyla == "Bacteria"]<-"Unclassified"
 data_stat<-data_contig%>%
-  group_by(type.x,plas_type) %>% 
+  group_by(contig_phyla,type.x,plas_type) %>% 
   count()
-##draw ARG type plasflow output
+##draw ARG type plasflow output--------------------------
 data_stat_percentage<-data_stat%>%
   group_by(type.x)%>%
   mutate(percent=n/sum(n))%>%
@@ -49,7 +50,7 @@ ggplot(data_stat_cover_sum)+geom_bar(aes(x=type.x,y=percent,fill=plas_type,color
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
 
 
-##location plasflow output(ARC number)
+##location plasflow output(ARC number)----------------------------------
 data_contig_Sample<-read.xlsx("C:/Users/USER/Desktop/ARC_plasflow out.xlsx",sheet=2)
 data_contig_Sample<-data_contig_Sample%>%
   separate(label,into=c("type","NUL"))
