@@ -74,4 +74,4 @@ data_contig_Sample_sta$Sample<-factor(data_contig_Sample_sta$Sample,levels = c("
 ggplot(data_contig_Sample_sta)+geom_bar(aes(x=Sample,y=percent,fill=type,color=type),alpha=0.7,stat="identity")+
   scale_fill_manual("Gene Location",values = color)+scale_color_manual("Gene Location",values = color)+theme_bw()+labs(x="Location",y="Relative abundance")+
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))  
-
+##ARC phyla plaflow sankey plot-------------------
