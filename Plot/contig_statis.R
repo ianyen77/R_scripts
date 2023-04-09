@@ -3,7 +3,7 @@ library(tidyverse)
 library(pheatmap)
 library(RColorBrewer)
 library(ggsankey)
-data_contig<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARC_analysis/ARC_phyla_整理.xlsx",sheet=1)
+data_contig<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARC_analysis/ARC_phyla_整理_adjcov.xlsx",sheet=1)
 data_contig$contig_phyla[is.na(data_contig$contig_phyla)]<-"Unclassified"
 data_contig$contig_phyla[data_contig$contig_phyla == "Bacteria"]<-"Unclassified"
 ##ARG type percentage----------------------------------
@@ -51,12 +51,12 @@ ggplot(data_stat)+geom_bar(aes(x=Sample,y=type_ACC_percent,fill=contig_phyla,col
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
 #ARC host percentage(coverage)---------------------------
 data_stat<-data_contig%>%
-  select(Sample,contig_phyla,orf_coverage,contig_coverage)%>%
+  select(Sample,contig_phyla,orf_adj_coverage,contig_adj_coverage)%>%
   group_by(Sample,contig_phyla)%>%
-  summarise_at(vars(contig_coverage), funs(sum))%>%
+  summarise_at(vars(orf_adj_coverage), funs(sum))%>%
   group_by(Sample)%>%
-  mutate(sum_coverage=sum(contig_coverage))%>%
-  mutate(contig_coverage/sum_coverage)
+  mutate(sum_coverage=sum(orf_adj_coverage))%>%
+  mutate(x=orf_adj_coverage/sum_coverage)
 convert_column_names <- function(data, column) {
   column_names <- c("T1", "T2", "T3", "T4", "T5")
   new_names <- c("Raw", "Finished", "Upstream", "Midstream", "Downstream")
@@ -71,14 +71,14 @@ data_stat <- convert_column_names(data_stat, "Sample")
 color1<-hcl.colors(7,"sunset")
 data_stat$Sample<-factor(data_stat$Sample,levels = c("Raw","Finished","Upstream","Midstream","Downstream"))
 #relative abundance(ARC number)
-ggplot(data_stat)+geom_bar(aes(x=Sample,y=`contig_coverage/sum_coverage`,fill=contig_phyla,color=contig_phyla),alpha=0.7,stat="identity",width=0.8)+
-  scale_fill_manual("ARC Phyla",values = color1)+scale_color_manual("ARC Phyla",values = color1)+theme_bw()+labs(x="Location",y="Relative abundance")+
+ggplot(data_stat)+geom_bar(aes(x=Sample,y=x,fill=contig_phyla,color=contig_phyla),alpha=0.7,stat="identity",width=0.8)+
+  scale_fill_manual("ARC Phyla",values = color1)+scale_color_manual("ARC Phyla",values = color1)+theme_bw()+labs(x="Location",y="Coverage relative abundance")+
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
 
 ##ARG orf type coverage---------------------------------------------------------------
 data_stat<-data_contig%>%
   group_by(Sample,type)%>%
-  summarise_at(vars(orf_coverage), funs(sum))
+  summarise_at(vars(orf_adj_coverage), funs(sum))
 #這個函式可以用來將Sample名稱轉成Location名稱
 convert_column_names <- function(data, column) {
   column_names <- c("T1", "T2", "T3", "T4", "T5")
@@ -102,7 +102,7 @@ data_stat$Sample<-factor(data_stat$Sample,levels = c("Raw","Finished","Upstream"
 color1<-c( "#FFFFB3" ,"#BC80BD" , "#FB8072" ,"#80B1D3" ,"#FDB462" ,"#B3DE69" ,"#FCCDE5" ,"#D9D9D9","#BEBADA" ,"#CCEBC5" ,"#FFED6F")
 color<- hcl.colors(14, "Sunset")
 
-ggplot(data_stat)+geom_bar(aes(x=Sample,y=orf_coverage,fill=type,color=type),stat="identity",alpha=0.7,width = 0.8)+
+ggplot(data_stat)+geom_bar(aes(x=Sample,y=orf_adj_coverage,fill=type,color=type),stat="identity",alpha=0.7,width = 0.8)+
   scale_fill_manual("Location",values = color)+scale_color_manual("Location",values = color)+theme_bw()+labs(x="ARG Type",y="ARC coverage (x/GB)")+
   theme(axis.title = element_text(size=13),axis.text = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))
 
