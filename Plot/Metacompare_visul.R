@@ -48,10 +48,14 @@ color2<-hcl.colors(5,"sunset")
 colo2<-rep(color2,each=3)
 data1$Location<-data$Location
 data1$Location<-factor(data1$Location,levels =c("Raw","Finished","Upstream","Midstream","Downstream"))
-
+#lolipop plot
 ggplot(data1) +
   geom_segment(aes(x=Location, xend=Location, y=0, yend=Risk.Score), color="grey")+
   geom_point( aes(x=Location, y=Risk.Score),color="#704D9E", size=4,alpha=0.5) +
   theme_bw() +
   xlab("Sample") +
   ylab("Metacompare Risk Score")
+#3d scatter
+s3d<-scatterplot3d(data1[,1:3],main="Metacompare risk Matrix Scores",color= color1,pch=18,cex.symbols = 2,type="h",grid=T)
+text(s3d$xyz.convert(data1[,1:3]),adj=0.2,pos=3,labels =data1[,4],cex= 0.66, col = "black")
+legend("bottom",col=color1,legend=levels(data1$Location),pt.bg = color1,pch=18,inset=-0.17,xpd =T,horiz = T)
