@@ -40,11 +40,42 @@ x<-x%>%
 #sample selection
 x1<-x[-(1:6),]
 x2<-x[-(1:3),]
-ggplot(data = x2,aes(x=M_ncontig,y=A_ncontig))+
-  geom_point(color="#80B1D3",size=3,alpha=0.7)+geom_smooth(method =lm,color="#80B1D3",alpha=0.3) +theme_bw()+labs(x="Total MGE-like ORF coverage against contig number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
+ggplot(data = x,aes(x=M_ncontig,y=A_ncontig))+
+  geom_point(size=3,alpha=0.7,color=  "#80B1D3")+geom_smooth(color=  "#80B1D3",method =lm,alpha=0.3) +theme_bw()+labs(x="Total MGE-like ORF coverage against contig number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
   theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
 cor.test(x2$A_ncontig,x2$M_ncontig)
 ##ggscatter---------------------
 ggscatter(data=x2,x="M_ncontig",y="A_ncontig", add = "reg.line", conf.int = TRUE,  color=  "#80B1D3",alpha=0.7,size=3,
           add.params = list(fill = "lightgray"))+stat_cor(method = "pearson", label.x =0.15, label.y = 0.001)+theme_bw()+labs(x="Total MGE-like ORF coverage against contig number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
   theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
+
+
+
+
+x$Type<-c("Raw","Raw","Raw","Finished","Finished","Finished","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS")
+x$Type<-rep(c("Raw","Raw","Raw","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW"))
+x$Type<-factor(x$Type,levels =c("Raw","Finished","DWDS"))
+x$Type<-factor(x$Type,levels =c("Raw","DW"))
+color<-hcl.colors(6,"sunset")
+color1<-c("#F9B282","#ED7C97","#704D9E" )
+color2<-c("#704D9E","#F9B282")
+##Multigroup--- without normalized,without group regression
+ggscatter(data=x,x="MGE",y="ARG",color="Type", conf.int = TRUE,alpha=0.6,size=3)+  geom_smooth(method = "lm", color = "black",size=0.6,alpha=0.3)+
+ stat_cor(method = "pearson", label.x = 300,label.y=20)+theme_bw()+labs(x="Total MGE-like ORF coverage (x/GB)",y="Total ARG-like ORF(x/GB)")+
+  theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
+
+##Multigroup-----without normalized
+ggscatter(data=x,x="MGE",y="ARG",fill="Type",color="Type", add = "reg.line", conf.int = TRUE,alpha=0.6,size=3,
+          add.params = list(fill = "lightgray"))+stat_cor(aes(color=Type),method = "pearson", label.x = 300)+theme_bw()+labs(x="Total MGE-like ORF coverage (x/GB)",y="Total ARG-like ORF(x/GB)")+
+  theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
+
+
+##Multigroup---with normalized,without group regression
+ggscatter(data=x,x="M_ncontig",y="A_ncontig",fill="Type",color="Type", conf.int = TRUE, alpha=0.6,size=3,
+          add.params = list(fill = "lightgray"))+geom_smooth(method = "lm", color = "black",size=0.6,alpha=0.3)+stat_cor(method = "pearson")+theme_bw()+labs(x="Total MGE-like ORF coverage against contigs number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
+  theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
+
+##Multigroup-----with normalized
+ggscatter(data=x,x="M_ncontig",y="A_ncontig",fill="Type",color="Type", add = "reg.line", conf.int = TRUE,alpha=0.6,size=3,
+          add.params = list(fill = "lightgray"))+stat_cor(aes(color=Type),method = "pearson")+theme_bw()+labs(x="Total MGE-like ORF coverage against contigs number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
+  theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
