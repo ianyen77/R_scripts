@@ -60,22 +60,22 @@ color<-hcl.colors(6,"sunset")
 color1<-c("#F9B282","#ED7C97","#704D9E" )
 color2<-c("#704D9E","#F9B282")
 ##Multigroup--- without normalized,without group regression
-ggscatter(data=x,x="MGE",y="ARG",color="Type", conf.int = TRUE,alpha=0.6,size=3)+  geom_smooth(method = "lm", color = "black",size=0.6,alpha=0.3)+
+ggscatter(data=x,x="MGE",y="ARG",color="Type", conf.int = TRUE,alpha=0.7,size=3)+  geom_smooth(method = "lm", color = "grey",alpha=0.2)+
  stat_cor(method = "pearson", label.x = 300,label.y=20)+theme_bw()+labs(x="Total MGE-like ORF coverage (x/GB)",y="Total ARG-like ORF(x/GB)")+
   theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
 
 ##Multigroup-----without normalized
-ggscatter(data=x,x="MGE",y="ARG",fill="Type",color="Type", add = "reg.line", conf.int = TRUE,alpha=0.6,size=3,
+ggscatter(data=x,x="MGE",y="ARG",fill="Type",color="Type", add = "reg.line", conf.int = TRUE,alpha=0.7,size=3,
           add.params = list(fill = "lightgray"))+stat_cor(aes(color=Type),method = "pearson", label.x = 300)+theme_bw()+labs(x="Total MGE-like ORF coverage (x/GB)",y="Total ARG-like ORF(x/GB)")+
   theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
 
 
 ##Multigroup---with normalized,without group regression
-ggscatter(data=x,x="M_ncontig",y="A_ncontig",fill="Type",color="Type", conf.int = TRUE, alpha=0.6,size=3,
-          add.params = list(fill = "lightgray"))+geom_smooth(method = "lm", color = "black",size=0.6,alpha=0.3)+stat_cor(method = "pearson")+theme_bw()+labs(x="Total MGE-like ORF coverage against contigs number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
+ggscatter(data=x,x="M_ncontig",y="A_ncontig",fill="Type",color="Type", conf.int = TRUE, alpha=0.7,size=3,
+          add.params = list(fill = "lightgray"))+geom_smooth(method = "lm", color = "grey",alpha=0.2)+stat_cor(method = "pearson")+theme_bw()+labs(x="Total MGE-like ORF coverage against contigs number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
   theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
 
 ##Multigroup-----with normalized
-ggscatter(data=x,x="M_ncontig",y="A_ncontig",fill="Type",color="Type", add = "reg.line", conf.int = TRUE,alpha=0.6,size=3,
+ggscatter(data=x,x="M_ncontig",y="A_ncontig",fill="Type",color="Type", add = "reg.line", conf.int = TRUE,alpha=0.7,size=3,
           add.params = list(fill = "lightgray"))+stat_cor(aes(color=Type),method = "pearson")+theme_bw()+labs(x="Total MGE-like ORF coverage against contigs number(x/GB)",y="Total ARG-like ORF coverage against contig number(x/GB)")+
   theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual(values=color1)
