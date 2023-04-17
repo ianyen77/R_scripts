@@ -1,6 +1,7 @@
 library(openxlsx)
 library(tidyverse)
 library(ggpubr)
+library(Cairo)
 ##ARG-like ORF coverage
 file_path <- "C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARC/indivisual assembly/ARC_sm70/ARC_ORF/ARG_orf_coverage/ARG_lik_orf_coverage/"
 file_list <- list.files(path = file_path, pattern = ".xlsx", full.names = TRUE)
@@ -53,9 +54,9 @@ ggscatter(data=x2,x="M_ncontig",y="A_ncontig", add = "reg.line", conf.int = TRUE
 
 
 x$Type<-c("Raw","Raw","Raw","Finished","Finished","Finished","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS","DWDS")
-x$Type<-rep(c("Raw","Raw","Raw","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW"))
+#x$Type<-rep(c("Raw","Raw","Raw","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW","DW"))
 x$Type<-factor(x$Type,levels =c("Raw","Finished","DWDS"))
-x$Type<-factor(x$Type,levels =c("Raw","DW"))
+#x$Type<-factor(x$Type,levels =c("Raw","DW"))
 color<-hcl.colors(6,"sunset")
 color1<-c("#F9B282","#ED7C97","#704D9E" )
 color2<-c("#704D9E","#F9B282")
