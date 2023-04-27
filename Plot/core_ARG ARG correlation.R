@@ -32,3 +32,18 @@ plotdata$sample<-rownames(plotdata)
 plotdata<-gather(plotdata,type,amount,`Core ARGs`,`Other ARGs`)
 ggplot(plotdata)+
   geom_bar(aes(x=sample,y=amount,fill=type,color=type),alpha=0.8,stat="identity")+scale_fill_manual(values = color)+scale_color_manual(values = color)+theme_bw()+labs(x="Sample",y="Relative abundance")+theme(axis.title = element_text(size=12.5),legend.title= element_text(size=12.5),legend.text = element_text(size=12.5))
+##each core ARG corr with total ARGs-----------
+data_core1<-data_core%>%
+  select(1:16)%>%
+  column_to_rownames("ARGs.abundance.normalization.aganist.16S")
+data_core1<-rbind(data_core1,ARG_sum=data_sum)%>%
+  t()%>%
+  as.data.frame()
+#corrtest
+data<-data_core1
+data<-data[-(1:6),]
+library(Hmisc)
+data.matrix<-as.matrix(data)
+corr<-rcorr(data.matrix,type= 'pearson')
+data2<-as.data.frame(cbind(r=corr[["r"]][27,],p=corr[["P"]][27,]))
+write.xlsx(data2, 'C:/Users/USER/Desktop/小型test.xlsx',rowNames=T,colNames=T)
