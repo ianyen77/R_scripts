@@ -57,16 +57,18 @@ Spore_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0043934")] # Sporula
 stress_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0006950")]# Stress
 chemical_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0042221")]# chemical
 ar_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0046677")]# antibiotic
-starvation_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0031667")]# starvation
-agg_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0098743")]#cell aggregation
+starvation_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0042594")]# starvation
+agg_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0098630")]#aggregation of unicellular organisms
 detox_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0098754")]#detoxification
-regulation_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0065007")]#regulation
+regulation_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0010468")]#regulation
 secretion_subGene <- GO_db$id[grep(GO_db$ancestors, pattern="GO:0046903")]#secretion
 ox_stress_subGene<- GO_db$id[grep(GO_db$ancestors, pattern="GO:0006979")]#oxidative stress
 redox_state_subGene<- GO_db$id[grep(GO_db$ancestors, pattern="GO:0051775")]#redox state
 abotic_stimulus_subGene<- GO_db$id[grep(GO_db$ancestors, pattern="GO:0009628")]#abiotic stimulus
+metabolic_subGene<- GO_db$id[grep(GO_db$ancestors, pattern="GO:0044237")]#metabolic procress
+cellwall_subGene<- GO_db$id[grep(GO_db$ancestors, pattern="GO:1990394")]#cell wall
 
-ar_subGene<-stress_subGene
+ar_subGene<-metabolic_subGene
 # Fiter select gene from GO database
 tmp <- go_zscore %>% filter(grepl(pattern = ar_subGene[1], x = Gene))
 for (i in 2:length(ar_subGene)){
@@ -86,15 +88,20 @@ rownames(annotation_row) = colnames(stress_go_mat)
 display.brewer.all()
 brewer.pal(7, "Set3")
 ann_colors = list(Sample = c(Raw= "#FB8072", Finished = "#80B1D3", Upsteram = "#B3DE69",Midstream ="#BEBADA",Downstream ="#8DD3C7" ))
+
+color=hcl.colors(50,"sunset")
 # Plot
-p <-pheatmap(stress_go_mat, cluster_cols = FALSE, 
-             clustering_distance_rows = "euclidean",
-             annotation_col = annotation_row, annotation_colors = ann_colors,
-             fontsize = 10, fontsize_row = 6, fontsize_col = 7,
-             cellwidth = 7, cellheight = 6, bg = "transparent")
+
+p <-pheatmap(stress_go_mat, cluster_cols = FALSE,clustering_distance_rows = "euclidean",fontsize = 10, fontsize_row = 10, fontsize_col = 10,
+             cellwidth =15, cellheight = 12, bg = "transparent",color=color,main ="GO:0046903 secretion")
+
+pt <-pheatmap(stress_go_mat, cluster_cols = FALSE, 
+              clustering_distance_rows = "euclidean",
+              fontsize = 10, fontsize_row = 6, fontsize_col = 7,
+              cellwidth = 7, cellheight = 6, bg = "transparent",color=color,main ="GO:0044237 Metabolic procress")
 
 #transformation plot
-pt <-pheatmap(t(stress_go_mat), cluster_rows = FALSE, 
+pt <-pheatmap(stress_go_mat, cluster_rows = FALSE, 
               clustering_distance_rows = "euclidean",
               annotation_row = annotation_row, annotation_colors = ann_colors,
               fontsize = 10, fontsize_row = 6, fontsize_col = 7,
