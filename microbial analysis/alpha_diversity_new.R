@@ -3,7 +3,7 @@ library(tidyverse)
 library(vegan)
 library(car)
 library("FSA")
-data<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/species_rel_table.xlsx",sheet=1,rowNames=F)
+data<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=T)
 rownames(data)<-data$Species
 data<-data[,-(1:7)]
 data<-as.data.frame(t(data))
@@ -28,7 +28,7 @@ alphadiversity_plotdata_bar<-alphadiversity_plotdata%>%
 color<-c("#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69")
 #boxplot
 ggplot(alphadiversity_plotdata,aes(x=location,y=value,fill=location))+geom_boxplot(alpha=0.7,width = 0.8)+geom_point()+facet_wrap(~index,nrow=2,scales = "free")+theme_bw()+
-  scale_fill_manual("Location",values = color)+theme(strip.text = element_text(size = 11))+labs(x="",y="")
+  scale_fill_manual("Location",values = color)+theme(strip.text = element_text(size = 12))+labs(x="",y="",title="ARGs Alpha Diversity indices")
 #barplot
 ggplot(alphadiversity_plotdata_bar,aes(x=location,y=mean,fill=location))+geom_bar(alpha=0.7,stat = "identity",width = 0.8)+facet_wrap(~index,nrow = 2,scales = "free")+theme_bw()+
   scale_fill_manual("Location",values = color)+geom_errorbar(aes(x=location,ymin=mean-std, ymax=mean+std), width=.1,position=position_dodge(.9))+labs(x="",y="")

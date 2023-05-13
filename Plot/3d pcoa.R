@@ -5,8 +5,8 @@ library(openxlsx)
 library(RColorBrewer)
 library(scatterplot3d)
 library(pairwiseAdonis)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/species_rel_table.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
-groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/bacteria_db/bracken_out/combine_brackenout/combine_bracken_s.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/standard_db/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 #因為species太多了，我們把小於0.01%的species清掉
 #dbpata[dbpata<0.0001]<-0
 #dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
@@ -62,3 +62,4 @@ colnames(points)[3]<-paste("PCoA 3 (", format(100 * eig[3] / sum(eig), digits=4)
 scatterplot3d(points[,1:3],color=colors,main="Bray_curtis PCoA",pch=16,cex.symbols = 1.3)
 legend("bottom",col=color,legend=levels(points$location),pt.bg = colors,pch=16,inset=-0.17,xpd =T,horiz = T)
 ?scatterplot3d
+7.21 5.72
