@@ -28,21 +28,10 @@ envata<-envata%>%
   arrange(desc(sum))
 envata<-envata[1:20,]
 envata$sum<-NULL
-#MGE篩選
-MGE<-MGE%>%
-  filter(apply(MGE,1,function(x) sum(x>0)>=5))
-MGE$sum<-apply(MGE,1,sum)
-MGE<-MGE%>%
-  arrange(desc(sum))
-MGE<-MGE[1:5,]
-MGE$sum<-NULL
 #data format transform
-#envata<-scale(envata)
 envata <- decostand(envata, method = 'hellinger')
 dbpata<-as.data.frame(t(dbpata))
 envata<-as.data.frame(t(envata))
-#MGE<-as.data.frame(t(MGE))
-#envata<-as.data.frame(cbind(envata,MGE))
 envata<-as.data.frame(scale(envata))
 #檢查環境變量的相關性，共線的環境變量要去除
 panel.cor <- function(x, y, digits=2, prefix="", cex.cor) {
@@ -139,16 +128,17 @@ B.plot=B.plot+
   geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]+0.05),y=(B.rda.env[,2]),label=rownames(B.rda.env)),size=3,
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 B.plot
-e.RDA<-e.RDA[-13,]
+
 e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))+
   #scale_color_manual(values=c("red","blue","green","black","grey","darkgreen"))+
+  geom_point(color="black",fill="black",size=2,alpha=0.7)+
   labs(x=paste("RDA1",B.rda1," %"),y=paste("RDA2",B.rda2," %"))+scale_color_manual(values=color1)+
   theme_bw()+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
   geom_hline(yintercept = 0, color = 'gray', linetype = 2)+geom_text(aes(label=e.RDA$subtype),size=2)
 e.plot=e.plot+
-  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1]/12,yend=B.rda.env[,2]/12),colour="#6A51A3",linewidth=0.3,alpha=0.7,
+  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="#6A51A3",linewidth=0.5,alpha=0.7,
                arrow=arrow(angle = 35,length=unit(0.3,"cm")))+
-  geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]/12)+0.005,y=(B.rda.env[,2])/12,label=rownames(B.rda.env)),size=3,
+  geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]+0.005),y=(B.rda.env[,2]),label=rownames(B.rda.env)),size=3,
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 e.plot
 

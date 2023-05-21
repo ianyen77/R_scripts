@@ -5,20 +5,21 @@ library(openxlsx)
 library(ggfortify)
 library(tidyverse)
 dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
-envata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ENV/envdata.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
-MGE<-read.xlsx("C:/Users/USER/Desktop/Genus_TAXA_vpa.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
+envata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ENV/envdata.xlsx",sheet=4,rowNames=T,colNames=T,sep.names=" ")
 groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/standard_db/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
-rownames(envata)<-envata$Genus
-envata<-envata[,-(1:7)]
+#Remove all 0 row of ARGs
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
+dbpata<-dbpata[,-(1:3)]
+envata<-envata[-(1:3),]
+groupata<-groupata[-(1:3),]
 #Genus 篩選
-envata<-envata%>%
-  filter(apply(envata,1,function(x) sum(x>0)>=15))
-envata$sum<-apply(envata,1,sum)
-envata<-envata%>%
+dbpata<-dbpata%>%
+  filter(apply(dbpata,1,function(x) sum(x>0)>=12))
+dbpata$sum<-apply(dbpata,1,sum)
+dbpata<-dbpata%>%
   arrange(desc(sum))
-envata<-envata[1:10,]
-envata$sum<-NULL
+dbpata<-dbpata[1:50,]
+dbpata$sum<-NULL
 #MGE篩選
 MGE<-MGE%>%
   filter(apply(MGE,1,function(x) sum(x>0)>=5))
@@ -29,11 +30,9 @@ MGE<-MGE[1:5,]
 MGE$sum<-NULL
 #data format transform
 #envata<-scale(envata)
-envata <- decostand(envata, method = 'hellinger')
+#envata <- decostand(envata, method = 'hellinger')
 dbpata<-as.data.frame(t(dbpata))
-envata<-as.data.frame(t(envata))
-MGE<-as.data.frame(t(MGE))
-envata<-as.data.frame(cbind(envata,MGE))
+#envata<-as.data.frame(t(envata))
 envata<-as.data.frame(scale(envata))
 #檢查環境變量的相關性，共線的環境變量要去除
 panel.cor <- function(x, y, digits=2, prefix="", cex.cor) {
@@ -66,7 +65,7 @@ summary(arg_cca)
 arg_cca_0<-rda(dbpata ~1, data=envata)
 summary(arg_cca_0)
 #這步變量要一直不斷的篩選，直到組合起來所有變量的VIF都小於10
-arg_cca_1<-rda(dbpata ~ g__Mycolicibacterium+g__Paracoccus +g__Metabacillus+insertion_element_IS91__IS91+transposase__tnpA , data=envata)
+arg_cca_1<-rda(dbpata ~Temperature+Free_Chlorine+DO+TDS, data=envata)
 summary(arg_cca_1)
 vif.cca(arg_cca_1)
 mod.u <- step(arg_cca_0, scope = formula(arg_cca_1), test = "perm")# "perm"增加P值等参数
@@ -122,18 +121,18 @@ B.rda.data$Location<-factor(B.rda.data$Location,levels = c("Raw","Finished","Ups
 B.plot=ggplot(data=B.rda.data,aes(RDA1,RDA2),color=Location)+
   geom_point(aes(color=Location,fill=Location),size=3,alpha=0.7)+
   #scale_color_manual(values=c("red","blue","green","black","grey","darkgreen"))+
-  labs(x=paste("RDA1",B.rda1," %"),y=paste("RDA2",B.rda2," %"))+scale_color_manual(values=color1)+
+  labs(x=paste("RDA1",B.rda1,"%"),y=paste("RDA2",B.rda2,"%"))+scale_color_manual(values=color1)+
   theme_bw()+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
   geom_hline(yintercept = 0, color = 'gray', linetype = 2)
 B.plot=B.plot+
-  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="#6A51A3",linewidth=0.3,alpha=0.7,
+  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1]/2,yend=B.rda.env[,2]/2),colour="#6A51A3",linewidth=0.3,alpha=0.7,
                arrow=arrow(angle = 35,length=unit(0.3,"cm")))+
-  geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]+0.05),y=(B.rda.env[,2]),label=rownames(B.rda.env)),size=3,
+  geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]/2+0.025),y=(B.rda.env[,2]/2),label=rownames(B.rda.env)),size=3,
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 B.plot
 
 e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))+
-  geom_point(size=1,alpha=0.7)+geom_text(aes(label=e.RDA$subtype),size=2)+
+  geom_point(size=1,alpha=0.7)+geom_text(aes(label=rownames(e.RDA)),size=2)+
   #scale_color_manual(values=c("red","blue","green","black","grey","darkgreen"))+
   labs(x=paste("RDA1",B.rda1," %"),y=paste("RDA2",B.rda2," %"))+scale_color_manual(values=color1)+
   theme_bw()+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
