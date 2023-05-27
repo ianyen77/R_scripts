@@ -1,7 +1,7 @@
 library(tidyverse)
 library(openxlsx)
 #這是用來畫ARGtype relative abundance 的script，data必須要先經過trasnform，把所有ARGtype 換成在每個樣本中的百分比
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=2,rowNames=F,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv2.2/ARGoap_out.xlsx",sheet=2,rowNames=F,colNames=T,sep.names=" ")
 dbpata1<-as.data.frame(apply(dbpata[,2:16],2,function(x) x/sum(x)))
 rownames(dbpata1)<-dbpata$`Type level results`
 dbpata<-dbpata1
@@ -23,5 +23,6 @@ RColorBrewer::brewer.pal(n=12,name="Set3")
 #color<-c("#FFFFB3","#BEBADA","#FB8072","#80B1D3","#FDB462","#B3DE69","#FCCDE5","#D9D9D9","#BC80BD","#CCEBC5","#FFED6F")
 color<-c( "#FFFFB3" ,"#BC80BD" , "#FB8072" ,"#80B1D3" ,"#FDB462" ,"#B3DE69" ,"#FCCDE5" ,"#D9D9D9","#BEBADA" ,"#CCEBC5" ,"#FFED6F")
 ggplot(data5)+
-  geom_bar(aes(x=xx,y=yf,fill=`ARGs type`,color=`ARGs type`),alpha=0.85,stat="identity")+
-  labs(x=NULL,y=NULL)+scale_fill_manual(values = color)+scale_color_manual(values = color)+theme_bw()+labs(x="Sample",y="Relative abundance")+theme(axis.title = element_text(size=12.5),legend.title= element_text(size=12.5),legend.text = element_text(size=12.5))
+  geom_bar(aes(x=xx,y=yf,fill=`ARGs type`,color=`ARGs type`),alpha=0.7,stat="identity")+
+  labs(x=NULL,y=NULL)+scale_fill_manual(values = color)+scale_color_manual(values = color)+theme_bw()+labs(x="Sample",y="Relative abundance")+theme(axis.title = element_text(size=12.5),axis.text =element_text(size=12)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
+

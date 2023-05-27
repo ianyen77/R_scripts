@@ -1,7 +1,7 @@
 library(openxlsx)
 library(tidyverse)
 library(RColorBrewer)
-data<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=2,rowNames=T,colNames =T)
+data<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv2.2/ARGoap_out.xlsx",sheet=2,rowNames=T,colNames =T)
 data$sum<-apply(data,1,sum)
 data<-data%>%
   arrange(desc(sum))
@@ -15,13 +15,15 @@ data$`ARGs type`<-rownames(data)
 data$`ARGs type`<-factor(data$`ARGs type`,levels = c("aminoglycoside","bacitracin","beta-lactam","fosfomycin","macrolide-lincosamide-streptogramin","multidrug","rifamycin","sulfonamide","tetracycline","unclassified","vancomycin","others"),labels = c("Aminoglycoside","Bacitracin","Beta-lactam","Fosfomycin","MLS","Multidrug","Rifamycin","Sulfonamide","Tetracycline","Unclassified","Vancomycin","Others"))
 plotdata<-data%>%
   gather(key="sample",value="amount",1:15)
+color<-c( "#8DD3C7","#FFFFB3" ,"#BC80BD" , "#FB8072" ,"#80B1D3" ,"#FDB462" ,"#B3DE69" ,"#FCCDE5" ,"#D9D9D9","#BEBADA" ,"#CCEBC5" ,"#FFED6F")
 ggplot(plotdata)+
-  geom_bar(aes(x=sample,y=amount,fill=`ARGs type`,color=`ARGs type`),stat="identity",alpha=0.9)+
-  labs(x=NULL,y=NULL)+scale_fill_brewer(palette = "Set3")+scale_color_brewer(palette = "Set3")+theme(axis.title = element_text(size=13),axis.text = element_text(size=13),legend.title= element_text(size=12),legend.text = element_text(size=12))+theme_bw()+xlab("Sample")+ylab("ARGs abundance normalization against 16S")+theme_bw()
+  geom_bar(aes(x=sample,y=amount,fill=`ARGs type`,color=`ARGs type`),stat="identity",alpha=0.7)+
+  labs(x=NULL,y=NULL)+scale_fill_manual(values = color )+scale_color_manual(values = color)+theme_bw()+xlab("Sample")+ylab("ARGs abundance normalization against 16S rDNA")+
+  theme(axis.title = element_text(size=12.5),axis.text =element_text(size=12)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
 RColorBrewer::display.brewer.all()
 display.brewer.pal(n=12,name="Set3")
 brewer.pal(n=12,name="Set3")
-color<-c("#FFFFB3","8DD3C7","#FCCDE5","#D9D9D9","#BC80BD","#CCEBC5","#FFED6F","#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69","#8DD3C7")
+#color<-c("#FFFFB3","#8DD3C7","#FCCDE5","#D9D9D9","#BC80BD","#CCEBC5","#FFED6F","#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69","#8DD3C7")
 
 plotdata$location[plotdata$sample=="T1-W-1"]<-"Raw"
 plotdata$location[plotdata$sample=="T1-W-2"]<-"Raw"

@@ -3,7 +3,7 @@ library(tidyverse)
 library(pheatmap)
 library(RColorBrewer)
 library(circlize)
-data_contig<-read.xlsx("C:/Users/USER/Desktop/ARC_analysis/ARC_phyla_整理.xlsx",sheet=1)
+data_contig<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARC_analysis/ARC_phyla_整理_adjcov.xlsx",sheet=1)
 data_contig$contig_phyla[is.na(data_contig$contig_phyla)]<-"Unclassified"
 data_contig$contig_phyla[data_contig$contig_phyla == "Bacteria"]<-"Unclassified"
 data_contig$type[data_contig$type == "fosmidomycin"]<-"Others"
