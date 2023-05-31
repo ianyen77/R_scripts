@@ -4,9 +4,9 @@ library(ggplot2)
 library(openxlsx)
 library(ggfortify)
 library(tidyverse)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv2.2/ARGoap_out.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
 envata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/bacteria_db/bracken_out/combine_brackenout/combine_bracken_g.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
-core<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/plot/core ARG/core ARG_corr with total ARG.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
+core<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv2.2/plot/core ARG/core ARG_corr with total ARG.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
 groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/standard_db/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 
 dbpata<-dbpata[,-(2:4)]
@@ -26,7 +26,7 @@ envata<-envata%>%
 envata$sum<-apply(envata,1,sum)
 envata<-envata%>%
   arrange(desc(sum))
-envata<-envata[1:20,]
+envata<-envata[1:30,]
 envata$sum<-NULL
 #data format transform
 envata <- decostand(envata, method = 'hellinger')
@@ -64,7 +64,7 @@ summary(arg_cca)
 arg_cca_0<-rda(dbpata ~1, data=envata)
 summary(arg_cca_0)
 #這步變量要一直不斷的篩選，直到組合起來所有變量的VIF都小於10
-arg_cca_1<-rda(dbpata ~Mycolicibacterium+Paracoccus +Klebsiella+Nitrobacter+Sphingomonas, data=envata)
+arg_cca_1<-rda(dbpata ~Mycolicibacterium+Shinella +Klebsiella+Sphingomonas+Staphylococcus+Sphingopyxis,data=envata)
 summary(arg_cca_1)
 vif.cca(arg_cca_1)
 mod.u <- step(arg_cca_0, scope = formula(arg_cca_1), test = "perm")# "perm"增加P值等参数
@@ -136,7 +136,7 @@ e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))+
   theme_bw()+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
   geom_hline(yintercept = 0, color = 'gray', linetype = 2)+geom_text(aes(label=e.RDA$subtype),size=2)
 e.plot=e.plot+
-  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="#6A51A3",linewidth=0.5,alpha=0.7,
+  geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="#6A51A3",linewidth=0.7,alpha=0.7,
                arrow=arrow(angle = 35,length=unit(0.3,"cm")))+
   geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]+0.005),y=(B.rda.env[,2]),label=rownames(B.rda.env)),size=3,
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))

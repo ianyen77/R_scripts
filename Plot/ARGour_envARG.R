@@ -5,15 +5,15 @@ library(openxlsx)
 library(RColorBrewer)
 library(scatterplot3d)
 library(pairwiseAdonis)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
-dbpata1<-read.xlsx("C:/Users/USER/Desktop/ENV　ARG.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv2.2/ARGoap_out.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
+dbpata1<-read.xlsx("C:/Users/USER/Desktop/testing data/ENV　ARG.xlsx",sheet=1,rowNames=F,colNames=T,sep.names=" ")
 colnames(dbpata)[1]<-"Type level results"
 dbpata<-merge(dbpata,dbpata1,by="Type level results",all.x = T)
 str(dbpata)
 rownames(dbpata)<-dbpata$`Type level results`
 dbpata$`Type level results`<-NULL
 dbpata[is.na(dbpata)]<-0
-groupata<-read.xlsx("C:/Users/USER/Desktop/ENV　ARG.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
+groupata<-read.xlsx("C:/Users/USER/Desktop/testing data/ENV　ARG.xlsx",sheet=2,rowNames=T,colNames=T,sep.names=" ")
 #因為species太多了，我們把小於0.01%的species清掉
 #dbpata[dbpata<0.0001]<-0
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
@@ -50,7 +50,7 @@ color<-c("#FB8072","#BEBADA","#80B1D3","#FDB462","#B3DE69")
 ggplot(points, aes(x=Dim1, y=Dim2,color=location))+
   theme_bw()+
   geom_point(size=3,alpha=0.7)+#geom_text(aes(label=sample_ID),size=3,color="black",)+
-  scale_color_brewer("Location",palette = "Set3")+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
+  scale_color_brewer("Environmental samples",palette = "Set3")+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
   geom_hline(yintercept = 0, color = 'gray', linetype = 2,) +
   labs(x=paste("PCoA 1 (", format(100 * eig[1] / sum(eig), digits=4), "%)", sep=""),
        y=paste("PCoA 2 (", format(100 * eig[2] / sum(eig), digits=4), "%)", sep=""),
