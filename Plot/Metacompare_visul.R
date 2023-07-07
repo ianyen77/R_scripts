@@ -147,6 +147,13 @@ ggplot(data1) +
   ylab("Metacompare Risk Score")+
   ggtitle("Location Co-Assembly Metacompare Risk Score")+
   theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
+#bar plot
+bar_plot<-ggplot(data1,aes(x=Location,y=Risk.Score))+geom_bar(alpha=0.7,stat = "identity",width = 0.8,fill="#F3E79A")+geom_text(aes(x=Location, y=Risk.Score+1,label=Risk.Score))+
+  theme_bw() +
+  xlab("Sample") +
+  ylab("Metacompare Risk Score")+
+  ggtitle("Location Co-Assembly Metacompare Risk Score")+
+  theme(axis.title = element_text(size=13),axis.text =element_text(size=12.5)  ,legend.title= element_text(size=12),legend.text = element_text(size=12))
 #3d scatter
 s3d<-scatterplot3d(data1[,1:3],main="Metacompare risk Matrix Scores",color= color2,pch=18,cex.symbols = 2,type="h",grid=T)
 text(s3d$xyz.convert(data1[,1:3]),adj=0.2,pos=3,labels =data1[,4],cex= 0.66, col = "black")

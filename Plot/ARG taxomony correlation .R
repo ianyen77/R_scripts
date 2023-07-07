@@ -1,10 +1,11 @@
 library("openxlsx")
 library("Hmisc")
 library("tidyverse")
-data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/ARGoap_out.xlsx",sheet=1,rowNames=F,sep.names=" ")
-data_taxa<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/rel abundance table/genus_rel_table.xlsx",sheet=1,rowNames=F,sep.names=" ")
+data_ARGsub<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv2.2/ARGoap_out.xlsx",sheet=1,rowNames=F,sep.names=" ")
+data_taxa<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/bacteria_db/bracken_out/combine_brackenout/combine_bracken_g.xlsx",sheet=1,rowNames=F,sep.names=" ")
 #ARGdata名稱處理
-#data_ARGsub<-data_ARGsub[-(2:4)]
+data_ARGsub<-data_ARGsub[-(2:7)]
+data_taxa<-data_taxa[,-(2:7)]
 data_ARGsub<-data_ARGsub%>%
   separate(`ARGs abundance normalization aganist 16S`,into=c("type","subtype"),sep="__")
 rownames(data_ARGsub)<-data_ARGsub$subtype
@@ -14,10 +15,11 @@ data_ARGsub$subtype<-NULL
 data_ARGsub<-data_ARGsub[apply(data_ARGsub, 1, function(x) !all(x==0)),]
 #taxa名稱處理
 #data_taxa<-data_taxa[,-(8:10)]
-data_taxa<-data_taxa%>%
-  separate(Genus,into=c("n","Genus"),sep = "__")
-rownames(data_taxa)<-data_taxa$Genus
-data_taxa<-data_taxa[,-(1:8)]
+#data_taxa<-data_taxa%>%
+  #separate(Genus,into=c("n","Genus"),sep = "__")
+rownames(data_taxa)<-data_taxa$name
+data_taxa$name<-NULL
+#data_taxa<-data_taxa[,-(1:8)]
 data_taxa<-data_taxa[apply(data_taxa, 1, function(x) !all(x==0)),]
 #taxa top 20 abundance
 data_taxa$sum<-apply(data_taxa,1,sum)
@@ -32,18 +34,18 @@ data_taxa$sample<-rownames(data_taxa)
 data<-merge(data_taxa,data_ARGsub)
 rownames(data)<-data$sample
 data$sample<-NULL
-#data<-as.data.frame(t(data))
+data<-as.data.frame(t(data))
 #計算出現次數，並不常用可以選擇跳過
 {data_clean<-data
 data_clean[data_clean!=0]<-1
 data_clean$times_discover_in_all<-apply(data_clean,1,sum)
 data$times_discover<-data_clean$times_discover_in_all
 #這邊可以篩選出現超過幾次的data
-times_over8<-filter(data,times_discover>=8)
+times_over8<-filter(data,times_discover>=5)
 times_over8$times_discover<-NULL
 times_over8<-as.data.frame(t(times_over8))}
 #因為rcorr()他的input要是matrix
-data.matrix<-as.matrix(data)
+data.matrix<-as.matrix(times_over8)
 corr<-rcorr(data.matrix,type= 'spearman')
 #P值修正
 corr_P_adj <- p.adjust(corr$P, method = 'BH')
