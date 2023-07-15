@@ -29,6 +29,10 @@ data$Type[data$Type == "Mupirocin"]<-"Others"
 data$Type[data$Type == "Fosfomycin"]<-"Others"
 data$Type[data$Type == "Chloramphenicol"]<-"Others"
 data$Type[data$Type == "Streptothricin"]<-"Others"
+data$Type[data$Type == "Chloramphenicol"]<-"Others"
+data$Type[data$Type == "Streptothricin"]<-"Others"
+data$Type[data$Type == "Polymyxin"]<-"Others"
+data$Type[data$Type == "Aminocoumarin"]<-"Others"
 #Simplified phyla levle
 data$p[data$p=="Thermodesulfobacteriota"]<-"Others"
 data$p[data$p=="Fusobacteriota"]<-"Others"
@@ -48,6 +52,7 @@ data_sankey<- data_stat1%>%
   make_long('Sample','ARC_Phlya','ARG type')
 #make sakeyplot
 data_sankey$node<-factor(data_sankey$node)
+{
 reagg <- data_sankey%>%
   dplyr::group_by(node)%>%
   tally()
@@ -66,7 +71,7 @@ pl <- ggplot(df2, aes(x = x
 pl <- pl +geom_sankey(flow.alpha = 0.5
                       , node.color = NA
                       ,show.legend = F)
-pl <- pl +geom_sankey_text(size =5, color = "black", fill = NA, hjust = 0, 
+pl <- pl +geom_sankey_text(size =4.2, color = "black", fill = NA, hjust = 0, 
                            position = position_nudge(x = 0.08))
 pl <- pl +  theme_alluvial()
 pl <- pl + theme(legend.position = "none")
@@ -74,7 +79,88 @@ pl <- pl + theme(legend.position = "none")
 # , axis.text.y = element_blank()
 #, axis.ticks = element_blank()  
 # , panel.grid = element_blank())
-cols <- hcl.colors(21, "Sunset")
+cols <- hcl.colors(19, "Sunset")
 pl <- pl + scale_fill_manual(values=cols)
 pl
+}
+
+#Actinobacteria sankey------------------------------
+
+data<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARC_analysis/SARG_V3.2/kraken classification/ARC_classification_kraken2_merge.xlsx")
+data$p[is.na(data$p)]<-"Unclassified"
+data$c[is.na(data$c)]<-"Unclassified"
+data$o[is.na(data$o)]<-"Unclassified"
+data$f[is.na(data$f)]<-"Unclassified"
+data$g[is.na(data$g)]<-"Unclassified"
+data$s[is.na(data$s)]<-"Unclassified"
+data$Type<-str_to_sentence(data$Type)
+#simplified the plot
+#change name of MLs
+data$Type[data$Type == "Macrolide-lincosamide-streptogramin"]<-"MLS"
+#simplified the ARG TYPE
+#data$Type[data$Type == "fosmidomycin"]<-"Others"
+data$Type[data$Type == "Kasugamycin"]<-"Others"
+data$Type[data$Type == "Sulfonamide"]<-"Others"
+data$Type[data$Type == "Novobiocin"]<-"Others"
+data$Type[data$Type == "Mupirocin"]<-"Others"
+data$Type[data$Type == "Fosfomycin"]<-"Others"
+data$Type[data$Type == "Chloramphenicol"]<-"Others"
+data$Type[data$Type == "Streptothricin"]<-"Others"
+data$Type[data$Type == "Chloramphenicol"]<-"Others"
+data$Type[data$Type == "Streptothricin"]<-"Others"
+data$Type[data$Type == "Polymyxin"]<-"Others"
+data$Type[data$Type == "Aminocoumarin"]<-"Others"
+#Simplified phyla level
+data$p[data$p=="Thermodesulfobacteriota"]<-"Others"
+data$p[data$p=="Fusobacteriota"]<-"Others"
+data$p[data$p=="Cyanobacteriota"]<-"Others"
+data$p[data$p=="Planctomycetota"]<-"Others"
+data$p[data$p=="Verrucomicrobiota"]<-"Others"
+
+#core ARGs
+core_list<-read.csv("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv3.2/plot/Venn/SARG v3.3.csv")[,23]
+core_list<-core_list[core_list!=""]
+#select acintomycetota(actinobacteria) phyla
+data<-data[(data$Subtype %in% core_list),]
+data<-data[grep("Actinomycetota",data$p),]
+
+data_stat1<-data%>%
+  select(p,sample.x,g,Subtype)
+colnames(data_stat1)<-c('Phyla','Sample','Genera','ARG subtype')
+data_stat<-as.data.frame(data_stat1)
+data_sankey<- data_stat1%>%
+  make_long('Phyla','Sample','Genera','ARG subtype')
+#make sakeyplot
+data_sankey$node<-factor(data_sankey$node)
+{
+  reagg <- data_sankey%>%
+    dplyr::group_by(node)%>%
+    tally()
+  df2 <- merge(data_sankey,
+               reagg, 
+               by.x = 'node', 
+               by.y = 'node', 
+               all.x = TRUE)
+  pl <- ggplot(df2, aes(x = x
+                        , next_x = next_x
+                        , node = node
+                        , next_node = next_node
+                        , fill =node
+                        ,label = paste0(node, " = ", n))
+  )
+  pl <- pl +geom_sankey(flow.alpha = 0.5
+                        , node.color = NA
+                        ,show.legend = F)
+  pl <- pl +geom_sankey_text(size =4.2, color = "black", fill = NA, hjust = 0, 
+                             position = position_nudge(x = 0.08))
+  pl <- pl +  theme_alluvial()
+  pl <- pl + theme(legend.position = "none")
+  #pl <- pl +  theme(axis.title = element_blank()
+  # , axis.text.y = element_blank()
+  #, axis.ticks = element_blank()  
+  # , panel.grid = element_blank())
+  cols <- hcl.colors(25, "Sunset")
+  pl <- pl + scale_fill_manual(values=cols)
+  pl
+}
 
