@@ -8,24 +8,24 @@ dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/new
 envata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/bacteria_db/bracken_out/combine_brackenout/combine_bracken_g.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 MGE<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/MGE/ARG_OAP v3.2/MGE_ARGoap_3.2out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/standard_db/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
-dbpata<-dbpata[,-(1:6)]
-envata<-envata[,-(1:6)]
-groupata<-groupata[-(1:6),]
-MGE<-MGE[,-(1:6)]
+#dbpata<-dbpata[,-(1:6)]
+#envata<-envata[,-(1:6)]
+#groupata<-groupata[-(1:6),]
+#MGE<-MGE[,-(1:6)]
 #rownames(envata)<-envata$Genus
 #envata<-envata[,-(1:7)]
 dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
 #Genus 篩選
 envata<-envata%>%
-  filter(apply(envata,1,function(x) sum(x>0)>=9))
+  filter(apply(envata,1,function(x) sum(x>0)>=15))
 envata$sum<-apply(envata,1,sum)
 envata<-envata%>%
   arrange(desc(sum))
-envata<-envata[1:10,]
+envata<-envata[1:20,]
 envata$sum<-NULL
 #MGE篩選
 MGE<-MGE%>%
-  filter(apply(MGE,1,function(x) sum(x>0)>=9))
+  filter(apply(MGE,1,function(x) sum(x>0)>=15))
 MGE$sum<-apply(MGE,1,sum)
 MGE<-MGE%>%
   arrange(desc(sum))
@@ -70,7 +70,7 @@ summary(arg_cca)
 arg_cca_0<-rda(dbpata ~1, data=envata)
 summary(arg_cca_0)
 #這步變量要一直不斷的篩選，直到組合起來所有變量的VIF都小於10
-arg_cca_1<-rda(dbpata ~ Mycolicibacterium+Paracoccus+Bradyrhizobium+Shinella+tnpA1, data=envata)
+arg_cca_1<-rda(dbpata ~Mycobacterium+Paracoccus+Klebsiella+Pseudomonas+Sphingomonas+tnpA+IS91, data=envata)
 summary(arg_cca_1)
 vif.cca(arg_cca_1)
 mod.u <- step(arg_cca_0, scope = formula(arg_cca_1), test = "perm")# "perm"增加P值等参数
@@ -85,7 +85,7 @@ anova(arg_cca_1,by = "axis",step=1000)
 #VPA
 #dbpata<-dbpata[-(1:3),]
 #envata<-envata[-(1:3),]
-rda.vpa <- varpart(dbpata, envata[,c(2,5,6,7)],envata[,c(16)],chisquare = FALSE) 
+rda.vpa <- varpart(dbpata, envata[,c(2,10,14,17)],envata[,c(21,22)],chisquare = FALSE) 
 str(rda.vpa)
 rda.vpa
 plot(rda.vpa)
@@ -101,9 +101,10 @@ s.RDA
 ##繪製ARG subtype 在RDA上的位置
 e.RDA=as.data.frame(arg_cca_1$CCA$v)# 提取變量特徵值
 e.RDA$labels<-rownames(e.RDA)
-core_ARG_list<-c("aminoglycoside__aac(2')-I","bacitracin__bacA","beta-lactam__class A beta-lactamase","fosfomycin__fosX","fosmidomycin__rosB","macrolide-lincosamide-streptogramin__erm(39)","macrolide-lincosamide-streptogramin__macB","multidrug__acrB","multidrug__bpeF","multidrug__ceoB"
-,"multidrug__emrE","multidrug__mdtB","multidrug__mdtC","multidrug__mdtF","multidrug__mexF","multidrug__mexW","multidrug__multidrug_ABC_transporter","multidrug__multidrug_transporter","quinolone__mfpA","rifamycin__ADP-ribosylating transferase_arr","rifamycin__rifampin monooxygenase","tetracycline__tetV","unclassified__transcriptional regulatory protein CpxR cpxR","vancomycin__vanA","vancomycin__vanR","vancomycin__vanS"
-)
+#將核心ARG導入
+x<-read.csv("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv3.2/plot/Venn/SARG v3.3.csv")
+x<-x[,23][x[,23]!=""]
+core_ARG_list<-x
 e.RDA<-e.RDA[e.RDA$labels %in% core_ARG_list, ] 
 e.RDA<-e.RDA %>% 
   separate(labels,into=c("type","subtype"),sep = "__")
@@ -136,15 +137,16 @@ B.plot=B.plot+
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 B.plot
 
-e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))+
+e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))++geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
+  geom_hline(yintercept = 0, color = 'gray', linetype = 2)+
   geom_point(size=1,alpha=0.7)+geom_text(aes(label=e.RDA$subtype),size=2)+
   #scale_color_manual(values=c("red","blue","green","black","grey","darkgreen"))+
   labs(x=paste("RDA1",B.rda1," %"),y=paste("RDA2",B.rda2," %"))+scale_color_manual(values=color1)+
-  theme_bw()+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
-  geom_hline(yintercept = 0, color = 'gray', linetype = 2)
+  theme_bw()
 e.plot=e.plot+
   geom_segment(data=B.rda.env,aes(x=0,y=0,xend=B.rda.env[,1],yend=B.rda.env[,2]),colour="#6A51A3",linewidth=0.3,alpha=0.7,
                arrow=arrow(angle = 35,length=unit(0.3,"cm")))+
   geom_text(data=B.rda.env,aes(x=(B.rda.env[,1]+0.05),y=(B.rda.env[,2]),label=rownames(B.rda.env)),size=3,
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 e.plot
+#width 7.38 heigth 6.70

@@ -5,19 +5,21 @@ library(openxlsx)
 library(RColorBrewer)
 library(scatterplot3d)
 library(pairwiseAdonis)
-dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/bacteria_db/bracken_out/combine_brackenout/combine_bracken_s.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+dbpata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/ARG/SARGv3.2/ARG_oap_V3.2out.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
 groupata<-read.xlsx("C:/Users/USER/Desktop/lab/實驗/Metagenomic in DWDS/DATA/newDATA/TAXA/standard_db/groupdata.xlsx",sheet=1,rowNames=T,colNames=T,sep.names=" ")
+#dbpata<-dbpata[,-(1:3)]
+#groupata<-groupata[-(1:3),]
 #因為species太多了，我們把小於0.01%的species清掉
 #dbpata[dbpata<0.0001]<-0
 #dbpata<-dbpata[apply(dbpata, 1, function(x) !all(x==0)),]
 #dbpata1<-as.data.frame(apply(dbpata,2,function(x) x/sum(x)))
 #dbpata<-dbpata1
 #以上不一定需要，看你分析的DATA
-rownames(dbpata)<-dbpata$Species
-dbpata<-dbpata[,-(1:7)]
+#rownames(dbpata)<-dbpata$Species
+#dbpata<-dbpata[,-(1:7)]
 dbpata <-as.data.frame(t(dbpata))
 #Hellinger不一定需要，ARG不用
-dbpata <- decostand(dbpata, method = 'hellinger')
+#dbpata <- decostand(dbpata, method = 'hellinger')
 family_bray<-vegdist(dbpata, method="bray")
 length_1<-length(rownames(dbpata))
 pcoa = cmdscale(family_bray, k=(length_1-1), eig=TRUE)
@@ -54,6 +56,7 @@ ggplot(points, aes(x=Dim1, y=Dim2,colour=location))+
   labs(x=paste("PCoA 1 (", format(100 * eig[1] / sum(eig), digits=4), "%)", sep=""),
        y=paste("PCoA 2 (", format(100 * eig[2] / sum(eig), digits=4), "%)", sep=""),
        title="Bray_curtis PCoA")+theme(axis.title = element_text(size=12),legend.title= element_text(size=12),legend.text = element_text(size=12))+scale_color_manual("Location",values =color)
+#export7.21 5.72
 #3dpoca
 colors=color[as.numeric(points$location)]
 colnames(points)[1]<-paste("PCoA 1 (", format(100 * eig[1] / sum(eig), digits=4), "%)", sep="")
@@ -61,5 +64,5 @@ colnames(points)[2]<-paste("PCoA 2 (", format(100 * eig[2] / sum(eig), digits=4)
 colnames(points)[3]<-paste("PCoA 3 (", format(100 * eig[3] / sum(eig), digits=4), "%)", sep="")
 scatterplot3d(points[,1:3],color=colors,main="Bray_curtis PCoA",pch=16,cex.symbols = 1.3)
 legend("bottom",col=color,legend=levels(points$location),pt.bg = colors,pch=16,inset=-0.17,xpd =T,horiz = T)
-?scatterplot3d
-#export7.21 5.72
+
+
