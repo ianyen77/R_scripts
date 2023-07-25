@@ -137,7 +137,7 @@ B.plot=B.plot+
             colour="#6A51A3",vjust=(0.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]),hjust=(1.5-sign(B.rda.env[,1]))/2,angle=(45)*atan(B.rda.env[,2]/B.rda.env[,1]))#+theme(axis.title = element_text(family = "serif", face = "bold", size = 18,colour = "black"))
 B.plot
 
-e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))++geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
+e.plot=ggplot(data=e.RDA,aes(RDA1,RDA2))+geom_vline(xintercept = 0, color = 'gray', linetype = 2) +
   geom_hline(yintercept = 0, color = 'gray', linetype = 2)+
   geom_point(size=1,alpha=0.7)+geom_text(aes(label=e.RDA$subtype),size=2)+
   #scale_color_manual(values=c("red","blue","green","black","grey","darkgreen"))+

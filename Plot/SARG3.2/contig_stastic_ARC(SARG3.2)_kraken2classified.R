@@ -123,7 +123,10 @@ core_list<-core_list[core_list!=""]
 #select acintomycetota(actinobacteria) phyla
 data<-data[(data$Subtype %in% core_list),]
 data<-data[grep("Actinomycetota",data$p),]
-
+#data<-data[data$sample.x!="T1",]
+#data<-data[grep("bacA",data$Subtype),]
+data<-data %>% 
+  separate(Subtype,into = c("type","Subtype"),sep = "__")
 data_stat1<-data%>%
   select(p,sample.x,g,Subtype)
 colnames(data_stat1)<-c('Phyla','Sample','Genera','ARG subtype')
@@ -151,7 +154,7 @@ data_sankey$node<-factor(data_sankey$node)
   pl <- pl +geom_sankey(flow.alpha = 0.5
                         , node.color = NA
                         ,show.legend = F)
-  pl <- pl +geom_sankey_text(size =4.2, color = "black", fill = NA, hjust = 0, 
+  pl <- pl +geom_sankey_text(size =4, color = "black", fill = NA, hjust = 0, 
                              position = position_nudge(x = 0.08))
   pl <- pl +  theme_alluvial()
   pl <- pl + theme(legend.position = "none")
